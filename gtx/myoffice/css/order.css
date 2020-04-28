@@ -1,0 +1,389 @@
+/* order.css */
+
+.orderBox {
+}
+.orderBox:after {
+	display:block;
+	clear:both;
+	content:"";
+}
+.orderLeftBox {
+	float:left;
+	width:50%;
+	padding:10px;
+	text-align:center;
+}
+.orderLeftBox img {
+	max-width:560px;
+	width:100%;
+}
+.orderRightBox {
+	float:left;
+	width:50%;
+	padding:10px;
+}
+
+.orderInnerLeftBox {
+	float:left;
+	width:50%;
+	padding:10px 20px 10px 10px;
+}
+.detailBox {
+	border:1px solid #ccc;
+	border-top:2px solid #3c464f;
+	-webkit- box-shadow:3px 3px 5px 0px rgba(0, 0, 0, 0.3);
+	-moz- box-shadow:3px 3px 5px 0px rgba(0, 0, 0, 0.3);
+	box-shadow:3px 3px 5px 0px rgba(0, 0, 0,0.3);
+}
+.productDetail {
+	padding:7px 10px;
+	border-bottom:1px solid #dadadb;
+}
+.productTitle {
+	font-size:15px;
+	color:#5f696d;
+	color:#000;
+}
+.productText {
+	color:#393a3b;
+	font-size:13px;
+}
+.orderInnerRightBox {
+	float:left;
+	width:50%;
+	padding:10px 10px 10px 20px;
+}
+.productName {
+	padding:7px 10px;
+	color:#4e4e4e;
+	border-bottom:1px solid #dadadb;
+	font-size:18px;
+}
+.orderDataBox {
+	display:table;
+	width:100%;
+}
+.orderDataName {
+	display:table-cell;
+	padding:7px 10px;
+	color:#555555;
+	font-size:14px;
+}
+.orderData {
+	display:table-cell;
+	padding:7px 10px;
+	color:#314062;
+	font-size:14px;
+	text-align:right;
+}
+.btnPurchaseBox {
+	padding:10px;
+	text-align:center;
+}
+.btnPurchase {
+	width:100%;
+	height:auto;
+	padding:10px;
+	margin:20px 0 10px 0;
+	background:#000;
+	color:#fff;
+	border:0;
+	font-size:15px;
+	font-weight:500;
+}
+.purchaseText {
+	padding:10px;
+	color:#5b5b5b;
+	font-size:14px;
+}
+.qty {
+	height:auto;
+	padding:10px;
+	width:24px;
+	height:24px;
+	border:0;
+	border-radius:0;
+}
+.minus {
+	background:#778898 url(/myoffice/img/common/minus.png) no-repeat;
+	background-position:center center;
+}
+.qtySpan {
+	display:inline-block;
+	padding:0 7px;
+}
+.plus {
+	background:#778898 url(/myoffice/img/common/plus.png) no-repeat;
+	background-position:center center;
+}
+.border-bottom {
+	border-bottom:1px solid #dadadb;
+}
+.detailBox {
+	text-align:left;
+}
+#purchasePopup {
+	max-width:768px;
+	background:#fff;
+}
+.purchasePopupTitle {
+	padding:10px;
+	background:#000;
+	color:#fff;
+	font-size:18px;
+	font-weight:normal;
+}
+.purchasePopupContent {
+	background:#fff;
+}
+.addressContentBox {
+	padding:10px;
+	border-bottom:1px solid #ccc;
+}
+.addressContentInner {
+	text-align:center;
+}
+.bankAccount {
+	color:#000;
+	font-size:18px;
+	font-weight:bold;
+}
+.addressNotice {
+	margin-top:15px;
+	color:red;
+	font-size:16px;
+}
+.bankAddr {
+	margin-top:15px;
+	color:#000;
+	font-size:16px;
+	word-break:break-all;
+}
+.bankQRCode {
+	margin-top:15px;
+}
+.bankQRCode img {
+	max-width:110px;
+	width:100%;
+}
+.btnPopupBox {
+	padding:10px 0;
+	text-align:center;
+}
+.btnPopupBox a {
+	display:inline-block;
+	max-width:150px;
+	width:48%;
+	padding:10px 0;
+	color:#fff;
+	border:0;
+	border-radius:3px;
+	font-size:14px;
+	text-align:center;
+}
+.btnPopupOkay {
+	background:#8666b2;	
+}
+.btnPopupCancel {
+	background:#313133;
+}
+
+.btnOrderComBox {
+	text-align:center;
+	padding:20px 10px;
+}
+.btnOrderCom {
+	display:inline-block;
+	max-width:150px;
+	width:100%;
+	padding:10px 0;
+	background:#8666b2;	
+	color:#fff;
+	border:0;
+	border-radius:3px;
+	font-size:14px;
+	text-align:center;
+}
+.bankAddrText {
+}
+.btnBankAddrCopy {
+	background:#01A9DB;
+	border:1px solid #01A9DB;
+	color:#fff;
+}
+.orderInnerBox {
+	float:left;
+	width:33.333333333333%;
+	padding:7px;
+}
+#popOrderDetail {
+	max-width:768px;
+	background:#fff;
+	border-radius:0;
+}
+.orderDetailTitle {
+	padding:10px;
+	background:#000;
+	color:#fff;
+	font-size:18px;
+	font-weight:500;
+}
+.orderDetailBox {
+}
+.orderDetailInnerTitle {
+	padding:10px;
+	color:#000;
+	font-weight:500;
+}
+.orderDetailOuter {
+	background:#f9f9f9;
+	padding:10px;
+}
+.orderDetailInner {
+	margin-top:10px;
+	background:#fff;
+	border:1px solid #ccc;
+	border-bottom:0;
+}
+.orderDetailOuter > .orderDetailInner:first-of-type {
+	margin-top:0;
+}
+.orderDetailDataBox {
+	display:table;
+	width:100%;
+	border-bottom:1px solid #ccc;
+}
+.orderDetailDataName {
+	display:table-cell;
+	width:125px;
+	padding:7px;
+	text-align:left;
+}
+.orderDetailData {
+	display:table-cell;
+	width:auto;
+	padding:7px;
+	text-align:right;
+	vertical-align:middle;
+}
+
+/** Meplace Package **/
+.mecolor {background:#f9faff;height:86vh;}
+.meplace_title {margin:0 auto;width:98%;padding:50px 0;font-size:30px;text-align:center;}
+.package_select_box {padding:15px 40px;}
+.package_list {width:100%;}
+.package_list:after {display:block;clear:both;content:'';height:0;visibility:hidden;}
+.package_list li {float:left;width:16.6666%;padding:0 15px;}
+.package_list li .meplace_package {width:100%;max-width:236px;border:1px solid #d7d7d7;border-radius:30px;overflow:hidden;}
+.package_list li .meplace_package>dd {padding:45px 10px;background:#f9faff;text-align:center;}
+.package_list li .meplace_package>dd img {width:100%;max-width:116px;}
+.package_list li .meplace_package>dt {padding:30px 10px;background:#fff;font-size:22px;color:#898989;text-align:center;}
+.package_list li .meplace_package>dt .b_short_bar {display:block;margin:-30px auto 0;width:20px;height:2px;background:#0082ff;}
+.package_list li .meplace_package>dt .package_name {display:inline-block;padding:20px 0 5px;}
+
+.package_list li.checkon .meplace_package {box-shadow:0 5px 5px rgba(0,0,0,.2);}
+.package_list li.checkon .meplace_package>dd {background:#fff;}
+.package_list li.checkon .meplace_package {border:1px solid #0082ff;}
+.package_list li.checkon .meplace_package>dt {background:#0082ff;color:#fff;}
+.package_list li.checkon .meplace_package {position:relative;}
+.package_list li.checkon .meplace_package:after {position:absolute;content:url(/myoffice/img/meplace/check_on.png);top:14px;right:14px;}
+
+.package_select_box .btn_payment {display:block;margin:6% auto 50px;width:98%;max-width:350px;padding:14px 0 14px;border-radius:30px;text-align:center;font-size:18px;color:#fff;background: #00c6ff; background: -webkit-linear-gradient(to right, #0072ff, #00c6ff); background: linear-gradient(to right, #0072ff, #00c6ff);}
+
+/**** Reseller Pakage Agency package *****/
+
+	.package_order h2{font-weight: 500; font-size: 36px; text-align: center; padding: 60px 0;}
+	.package_order .order_con{text-align: center;}
+	.package_order .order_con ul{position: relative;}
+	.package_order .order_con ul li{display: inline-block; width: 300px; border-radius: 4px; position: relative; background-color: #fff;}
+	.package_order .order_con li+li{margin-left: 85px;}
+	.package_order .order_con li a{display: block; border: 1px solid #ccc; border-radius: 4px; padding-top: 10px; overflow: hidden;}
+	.package_order .order_con li .pro_img{position: relative;}
+	.package_order .order_con li .pro_img img{width: 280px;}
+	.package_order .order_con li .pro_img p{width: 64px; height: 64px; background-color: #e3eef5; border-radius: 50%; font-size: 24px; line-height: 64px; color: #20409a; position: absolute; right: 30px; top: 40px;}
+
+	.package_order .order_con li .txt_wrap{border-top: 1px solid #898989; margin: 10px 20px;}
+	.package_order .order_con li .txt_wrap .tit{font-weight: 500; font-size: 20px; line-height: 1em; padding: 10px; position: relative;}
+	.package_order .order_con li .txt_wrap .tit::after{content: ""; width: 18px; height: 2px; background-color: #ed1c24; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);}
+	.package_order .order_con li .txt_wrap p:nth-child(2){font-size: 16px; line-height: 20px; padding-top: 5px;}
+	.package_order .order_con li .txt_wrap span{font-weight: 300; font-size: 14px;}
+	.package_order .order_con li a>p{font-size: 16px; height: 48px; background-color: #f5f5f5; line-height: 48px;}
+	.package_order .order_con ul .or{width: 64px; height: 64px; font-size: 18px; line-height: 58px; background-color: #fff; border: 3px solid #e3eef5; border-radius: 50%; color: #20409a; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);}
+	.package_order .order_con button{width: 300px; height: 56px; background-color: #20409a; border: 0; border-radius: 4px; font-weight: 300; font-size: 18px; color: #fff; margin: 50px 0 60px;}
+
+	.package_order .order_con li.on::after{content: ""; display: block; width: 300px; height: 100%; border: 3px solid #aebfee; box-shadow: 3px 10px 10px rgba(0, 0, 0, 0.14); position: absolute; left: 0; top: 0; z-index: 10; box-sizing:  border-box; border-radius: 4px; background: url(../img/order/package_check.png) no-repeat 97% 2%;}
+
+	@media all and (max-width: 768px){
+		.package_order .order_con li+li{margin-left: 0; margin-top: 90px;}
+	}
+
+
+
+@media only screen and (max-width: 1200px) {
+	.orderBox {
+		max-width:768px;
+		margin:0 auto;
+	}
+	.orderLeftBox {
+		float:none;
+		width:100%;
+	}
+	.orderRightBox{
+		float:none;
+		width:100%;
+	}
+/* meplace package */
+.package_list li {float:left;width:33.3333%;padding:12px 12px;}
+
+
+}
+@media only screen and (max-width: 768px) {
+	.orderBox {
+		max-width:420px;
+	}	
+	.orderInnerLeftBox {
+		float:none;
+		width:100%;
+		padding:0;
+	}
+	.orderInnerRightBox {
+		float:none;
+		width:100%;
+		padding:0;
+		padding-top:10px;
+	}
+	.rightDetailBox {
+		min-height:auto;
+	}
+	.orderInnerBox {
+		float:none;
+		width:100%;
+	}
+
+	/* meplace package */
+
+.mecolor {height:100%;}
+.meplace_title {margin:0 auto;width:98%;padding:20px 0;font-size:24px;}
+.package_list li {float:left;width:50%;padding:12px 12px;}
+.package_list li .meplace_package>dd {padding:25px 10px;}
+.package_list li .meplace_package>dd img {width:100%;max-width:98px;}
+.package_list li .meplace_package>dt {padding:20px 10px;font-size:18px;}
+.package_list li .meplace_package>dt .b_short_bar {display:block;margin:-20px auto 0;width:15px;height:2px;}
+.package_list li .meplace_package>dt .package_name {display:inline-block;padding:14px 0 5px;}
+
+}
+
+
+@media only screen and (max-width: 460px) {
+
+	/* meplace package */
+
+
+.package_select_box {padding:15px 15px;}
+.package_list li {float:none;width:100%;padding:10px 10px;}
+.package_list li .meplace_package {margin:0 auto;width:100%;max-width:220px;border-radius:20px;}
+.package_list li .meplace_package>dd {padding:18px 8px;}
+.package_list li .meplace_package>dd img {width:100%;max-width:88px;}
+.package_list li .meplace_package>dt {padding:15px 6px;font-size:16px;}
+
+}

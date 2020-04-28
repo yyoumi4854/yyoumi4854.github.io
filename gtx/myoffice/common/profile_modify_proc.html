@@ -1,0 +1,88 @@
+<!--#include virtual="/myoffice/common/common.inc"-->
+<%
+On Error Resume Next
+
+userid			= Trim(Request.Form("userid"))
+
+e_mail			= Trim(Request.Form("e_mail"))
+mobile			= Trim(Request.Form("mobile"))
+address1		= Trim(Request.Form("address1"))
+address2		= Trim(Request.Form("address2"))
+
+bank_name		= Trim(Request.Form("bank_name"))
+bank_owner		= Trim(Request.Form("bank_owner"))
+bank_account	= Trim(Request.Form("bank_account"))
+
+
+LoginPassCheck	= Trim(Request.Form("LoginPassCheck"))
+LoginPass		= Trim(Request.Form("LoginPass"))
+LoginPassChk	= Trim(Request.Form("LoginPassChk"))
+
+update_ip		= Request.ServerVariables("remote_addr")
+
+inj_chk		= check_injection("")
+
+If inj_chk <> "OK" Then
+	res_state		= "FAIL"
+	res_msg			= "Some characters are not allowed.\nPlease check your input data."
+Else
+
+	sql =		"select	*															"
+	sql = sql & "  from	dist														"
+	sql = sql & " where passwd = ENCRYPTION_AES.ENC_AES('" & LoginPassCheck & "')	"
+	sql = sql & "   and userid = '" & userid		 & "'							"
+	Set rs_pw = DBConn.Execute(sql)
+
+	If rs_pw.Eof Then
+		res_state	= "FAIL"
+		res_msg		= "Password is not matched with current password."
+	Else
+
+		e_mail		= Replace(Replace(e_mail,"'",""),"""","")
+		mobile		= Replace(Replace(mobile,"'",""),"""","")
+		address1	= Replace(Replace(address1,"'",""),"""","")
+		address2	= Replace(Replace(address2,"'",""),"""","")
+
+		DBConn.BeginTrans
+
+		sql =		"update	dist							"
+		sql = sql & "   set	mobile		= ENCRYPTION_AES.ENC_AES('" & mobile	& "'),	"
+		sql = sql & "		e_mail		= '" & e_mail		& "',	"
+		If bank_name <> "" Then
+		sql = sql & "		bank_name	= '" & bank_name		& "',	"
+		End If
+		If bank_owner <> "" Then
+		sql = sql & "		bank_owner	= '" & bank_owner		& "',	"
+		End If
+		If bank_account <> "" Then
+		sql = sql & "		bank_account= '" & bank_account		& "',	"
+		End If
+		sql = sql & "		address1	= '" & address1		& "',	"
+		sql = sql & "		address2	= '" & address2		& "',	"
+
+		If LoginPassChk <> "" Then
+		sql = sql & "		passwd		= ENCRYPTION_AES.ENC_AES('" & LoginPass	& "'),	"
+		End If
+
+		sql = sql & "		update_user	= '" & userid		& "',	"
+		sql = sql & "		work_ip		= '" & update_ip	& "',	"
+		sql = sql & "		update_date	= sysdate					"
+		sql = sql & " where	userid		= '" & userid		& "'	"
+		DBConn.Execute(sql)
+
+		If Err.Number <> 0 Then
+			DBConn.RollBackTrans
+			res_state	= "FAIL"
+			res_msg		= "'During modifying your profile, some errors are occured.\nPlease try again later."
+		Else
+			DBConn.CommitTrans
+			res_state	= "SUCCESS"
+			res_msg		= "Your profile is updated successfully."
+		End If
+
+	End If
+
+End If
+Response.Write res_state & "|" & res_msg
+%>
+<!-- #include virtual = "/myoffice/common/db_close.inc" -->

@@ -1,0 +1,136 @@
+<%@ CodePage="65001" Language="vbscript"%>
+
+<!-- #include virtual = "/myoffice/common/common.inc" -->
+
+<!-- #include virtual = "/myoffice/inc/head.html" -->
+
+<!-- #include virtual = "/myoffice/inc/header.html" -->
+
+<!-- #include virtual = "/myoffice/inc/nav.html" -->
+<%
+Dim pay_name(), pay_field(), each_total()
+
+Set rs_name = Server.CreateObject("ADODB.RecordSet")
+rs_name.CursorType = 3
+
+sql =		"select	pay_name, pay_field	"
+sql = sql & "  from	pay_name			"
+sql = sql & " where	pay_kind = '5101'	"
+sql = sql & "   and	isUse = '1'			"
+sql = sql & " order by seq				"
+rs_name.Open sql, DBConn
+
+	pay_cnt		= rs_name.RecordCount
+
+	If pay_cnt = 0 Then
+		pay_detail = "F"
+	Else
+		pay_detail	= "T"
+		pay_sql		= ""
+
+		ReDim pay_name(pay_cnt), pay_field(pay_cnt),each_total(pay_cnt)
+
+		For i=1 To pay_cnt
+
+			pay_field(i)	= rs_name("pay_field")
+			pay_name(i)		= rs_name("pay_name")
+			rs_name.MoveNext
+		Next
+
+	End If
+	rs_name.Close
+
+%>
+<div id="container">
+	<div class="contentHeader">
+		<h3 class="contentTitle"><i class="fa fa-th-large" aria-hidden="true"></i> Daily bonus report</h3>
+	</div>
+	<div class="content">
+		<div class="section">
+			<h3 class="sectionTitle">Report period</h3>
+			<div class="innerBox">
+				<form>
+					<div class="searchBox">
+						<div class="searchInner">
+							<input type="text" name="st_date" id="st_date" class="inputFromDate" value="<%=date%>" readonly />
+							<input type="text" name="ed_date" id="ed_date" class="inputToDate" value="<%=date%>" readonly />
+							<button type="button" class="btnSearch" id="btnSearch"><i class="fa fa-search" aria-hidden="true"></i> INQUIRY</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="section">
+			<div class="innerBox" style="padding:10px;">
+				<table id="dataTable" class="display nowrap" style="width:100%">
+					<thead>
+						<tr>
+							<th>Caculation date</th>
+							<%
+							For i=1 To pay_cnt
+							Response.Write "<th>" & pay_name(i) & "</th>"
+							Next
+							%>
+							<th>Bonus total</th>
+							<th>Deduction total</th>
+							<th>Paid amount ($)</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- #include virtual = "/myoffice/inc/footer.html" -->
+
+<script type="text/javascript">
+	$(function(){
+		$("#st_date, #ed_date").datepicker({
+			dateFormat: "yy-mm-dd"
+		});
+
+		var $tblPayDay = $("#dataTable").DataTable({
+			scrollX : true,
+			searching : false,
+			lengthChange : false,
+			ajax: {
+				url: "/myoffice/json_data/pay_info_day_json.html",
+				dataSrc: "list",
+				type: "POST",
+				data : function (d){
+					d.st_date		= $("#st_date").val();
+					d.ed_date		= $("#ed_date").val();
+					d.userid		= "<%=Session("userid")%>";
+				}
+			},
+			columns: [
+				{data: "pay_date"	},
+				<% For i=1 To pay_cnt %>
+				{
+					data: '<%=pay_field(i)%>',
+				},
+				<% Next %>
+				{data: "total_amt"	},
+				{data: "total_tax"	},
+				{data: "true_amt"	}
+			],
+			columnDefs: [
+				{
+					targets : [1, 2, 3, 4, 5, 6],
+					className : "right",
+					render : function(data, type, row){
+						var rtnData = formatComma(data, 0);
+						return rtnData;
+					}
+				}
+			],
+			order: [[1, "desc"]],
+			pagingType : "numbers"
+		});
+
+		$("#btnSearch").on("click", function(){
+			$tblPayDay.ajax.reload();
+		});
+	});
+</script>

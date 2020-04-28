@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
+    <title>GTX</title>
+    <!-- css -->
+    <!-- <link rel="stylesheet" href="assets/css/index0.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+
+    <!-- js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- <script src="assets/js/index.js"></script> -->
+  </head>
+  <style>
+  @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap');
+  body{font-family: 'Roboto', '맑은 고딕', 'Malgun Gothic', sans-serif; font-size: 16px; line-height: 22px; color: #363636;}
+  /* reset */
+  body,h1,h2,h3,h4,h5,h6,p,ul,ol,li{margin: 0; padding: 0;}
+  ul,ol,li{list-style: none;}
+  input,select,button{vertical-align: middle; outline: inherit;}
+  button{padding: 0; outline: none; cursor: pointer;}
+  img{vertical-align: top;}
+  a{text-decoration: none; color: #545a5d;}
+
+  /* 굥용 */
+  .container{max-width: 1200px; margin: 0 auto;}
+
+  /* header start */
+  #header{width: 100%; height: 80px; background-color: lightyellow;}
+  #header.top_off{transition: all 0.4s;}
+  #header.top_on{background-color: pink; position: fixed; top: 0; transition: all 0.4s;}
+  #header .container::after{content: ""; display: block; clear: both; height: 80px; box-sizing: border-box;}
+  #header .logo{display: block; float: left; z-index: 190; height: 80px;}
+
+  #header #gnb{text-align: center;}
+  #header #gnb ul{display: inline-block;}
+  #header #gnb ul::after{content: ""; display: block; clear: both;}
+  #header #gnb ul li{float: left;}
+  #header #gnb ul li a{display: block; line-height: 40px; padding: 0 10px;}
+
+  #header .right_list{float: right;}
+  /* header end */
+
+  .section{height: 2000px; background-color: lightyellow;}
+  </style>
+
+  <body>
+    <!-- header start -->
+    <div id="header" class="top_off">
+      <div class="container">
+        <a href="#" class="logo">GTeXpress</a>
+
+        <div class="right_list">
+          <a href="#">LOGIN</a>
+          <a href="#"><i class="fas fa-shopping-cart"></i></a>
+        </div>
+
+        <div id="gnb">
+          <ul>
+            <li><a href="#">ABOUT US</a></li>
+            <li><a href="#">SKIN CARE</a></li>
+            <li><a href="#">GENESHIELD</a></li>
+            <li><a href="#">BOARD</a></li>
+            <li><a href="#">REVIEW</a></li>
+            <li><a href="#">JOIN NOW</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+    <!-- header end -->
+
+    <!-- section start -->
+    <div class="section">
+    </div>
+    <!-- section end -->
+
+    <script>
+    $(function(){
+      $(window).scroll(function(){
+        var winScrollT = $(window).scrollTop();
+
+        if (winScrollT >= 150) {
+          $("#header").removeClass("top_off");
+          $("#header").addClass("top_on");
+        }else {
+          $("#header").removeClass("top_on");
+          $("#header").addClass("top_off");
+        }
+      });
+    });
+    </script>
+  </body>
+</html>

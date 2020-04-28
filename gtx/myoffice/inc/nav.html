@@ -1,0 +1,154 @@
+<div class="pageCover"></div>
+<div id="aside">
+	<ul class="nav_depth1">
+		<li class="list_depth1">
+			<span class="depth1_item" data-listIndex="0">Home</span>
+			<a href="/" class="home_link">Home</a>
+		</li>
+		<li class="list_depth1">
+			<span class="depth1_item" data-listIndex="1">Profile</span>
+			<ul class="nav_depth2">
+				<li class="list_depth2">
+					<a href="/myoffice/profile/my_profile.html" class="depth2_item">My Profile</a>
+				</li>
+				<li class="list_depth2">
+					<a href="/myoffice/profile/signup.html" class="depth2_item">Signup</a>
+				</li>
+			</ul>
+		</li>
+		<li class="list_depth1">
+			<span class="depth1_item" data-listIndex="2">Downline</span>
+			<ul class="nav_depth2">
+				<li class="list_depth2">
+					<a href="/myoffice/downline/sponsor_map.html?type=R" class="depth2_item">Sponsor Map</a>
+				</li>
+				<!--<li class="list_depth2">
+					<a href="/myoffice/downline/sponsor_map.html?type=P" class="depth2_item">Placement Map</a>
+				</li>-->
+			</ul>
+		</li>
+		<li class="list_depth1">
+			<span class="depth1_item" data-listIndex="3">Order</span>
+			<ul class="nav_depth2">
+				<!--
+				<li class="list_depth2">
+					<a href="/myoffice/order/order.html" class="depth2_item">Order</a>
+				</li>
+				-->
+				<li class="list_depth2">
+					<a href="/myoffice/order/order_02.html" class="depth2_item">GTXp Deposit</a>
+				</li>
+				<li class="list_depth2">
+					<a href="/myoffice/order/package.html" class="depth2_item">GTXp Package</a>
+				</li>
+				<li class="list_depth2">
+					<a href="/myoffice/order/order_history.html" class="depth2_item">Order History</a>
+				</li>
+			</ul>
+		</li>
+		<!--
+		<li class="list_depth1">
+			<span class="depth1_item" data-listIndex="2">Investment</span>
+			<ul class="nav_depth2">
+				<li class="list_depth2">
+					<a href="/myoffice/investment/s_point.html" class="depth2_item">S-Point buying</a>
+				</li>
+				<li class="list_depth2">
+					<a href="/myoffice/investment/upgrade.html" class="depth2_item">Upgrade</a>
+				</li>
+				<li class="list_depth2">
+					<a href="/myoffice/investment/personal_report.html" class="depth2_item">Personal report</a>
+				</li>
+			</ul>
+		</li>
+		-->
+		<li class="list_depth1">
+			<span class="depth1_item" data-listIndex="4">Bonus Report</span>
+			<ul class="nav_depth2">
+				<li class="list_depth2">
+					<a href="/myoffice/bonus_report/daily_report.html" class="depth2_item">Daily report</a>
+				</li>
+				<!--
+				<li class="list_depth2">
+					<a href="/myoffice/bonus_report/instantly_report.html" class="depth2_item">Instantly report</a>
+				</li>
+				<li class="list_depth2">
+					<a href="/myoffice/bonus_report/weekly_report.html" class="depth2_item">Weekly report</a>
+				</li>
+				<li class="list_depth2">
+					<a href="/myoffice/bonus_report/monthly_report.html" class="depth2_item">Monthly report</a>
+				</li>
+				-->
+			</ul>
+		</li>
+		<li class="list_depth1">
+			<span class="depth1_item" data-listIndex="5">E-Wallet</span>
+			<ul class="nav_depth2">
+				<li class="list_depth2">
+					<a href="/myoffice/e_wallet/transaction_detail.html" class="depth2_item">Transaction Detail</a>
+				</li>
+				<!--
+				<li class="list_depth2">
+					<a href="/myoffice/e_wallet/transfer_to_others.html" class="depth2_item">Transfer to others</a>
+				</li>
+				-->
+				<li class="list_depth2">
+					<a href="/myoffice/e_wallet/withdrawal_request.html" class="depth2_item">Withdrawal request</a>
+				</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+<script type="text/javascript">
+	$(function(){
+		var $depth_1 = $(".list_depth1");
+		$depth_1.on("click", function(){
+			var $this = $(this);
+			$depth_1.find(".nav_depth2").stop().slideUp();
+			if(!$this.hasClass("open")){
+				$depth_1.removeClass("open");
+				$this.addClass("open");
+				$this.find(".nav_depth2").stop().slideDown();
+			}else{
+				$this.removeClass("open");
+				$this.find(".nav_depth2").stop().slideUp();
+			}
+		});
+
+		$("#btnMenu").on("click", function(){
+			if(!$("#btnMenu").hasClass("open")){
+				$("html").addClass("open");
+				$(".pageCover").addClass("open");
+				$("#aside").addClass("open");
+				$("#btnMenu").addClass("open");
+				$("#btnMenu > i").removeClass("fa-bars");
+				$("#btnMenu > i").addClass("fa-times");
+				window.location.hash = "#open";
+			}else{
+				$("html").removeClass("open");
+				$(".pageCover").removeClass("open");
+				$("#aside").removeClass("open");
+				$("#btnMenu").removeClass("open");
+				$("#btnMenu > i").removeClass("fa-times");
+				$("#btnMenu > i").addClass("fa-bars");
+				window.location.hash = "";
+			}
+		});
+
+		window.onhashchange = function(){
+			if (location.hash != "#open"){
+				$("html").removeClass("open");
+				$(".pageCover").removeClass("open");
+				$("#aside").removeClass("open");
+				$("#btnMenu").removeClass("open");
+			}
+		}
+
+		$(".pageCover").on("click", function(){
+			window.history.back();
+			$("#btnMenu").removeClass("open");
+			$("#btnMenu > i").removeClass("fa-times");
+			$("#btnMenu > i").addClass("fa-bars");
+		});
+	});
+</script>

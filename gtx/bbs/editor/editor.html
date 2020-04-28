@@ -1,0 +1,1061 @@
+<%
+Response.charset = "utf-8"
+Session.CodePage=65001
+Response.AddHeader "Pragma","no-cache"
+Response.AddHeader "Expires","0"
+%>
+<script language="javascript">
+var commonStyle="<style>td,textarea {font-size:12px;font-family:돋움;color:#464646} a { color:#464646; text-decoration:none; } a:visited { color:#464646; text-decoration:none; } a:hover { color:#464646; text-decoration:underline; } .hand {cursor:pointer}</style>";
+
+function imgOver(m) {
+	eval("document.all." + m).src = "/bbs/editor/images/" + m + "on.gif"
+}
+
+function imgOut(n) {
+	eval("document.all." + n).src = "/bbs/editor/images/" + n + ".gif"
+}
+
+function Div_Skill() {
+	if (document.all.div_skill2.style.display != "none") {
+		document.all.div_skill2.style.display = "none";
+		document.all.f16.src = "/bbs/editor/images/f16on.gif";
+	} else {
+		document.all.div_skill2.style.display = "inline";
+		document.all.f16.src = "/bbs/editor/images/f16.gif";
+	}
+}
+
+function CursorPos(target) {
+
+	if (isGecko && isIE11 == 0) return;
+
+	if (target == "img" || target == "link" || target == "emot")
+	{
+		SetHtmlAreaFocus(); // 이모티콘의 포커스 관련해서 꼭 필요!!!
+
+		if ( isIE11 ) {
+			cursorPos = document.getElementById('rHtmlArea').contentWindow.document.getSelection();
+		} else if( isIE5 ) {
+			cursorPos = rHtmlArea.document.selection.createRange();
+		} else {
+			cursorPos = document.getElementById('rHtmlArea').contentWindow.document.selection.createRange();
+		}
+	}
+	else {
+		if (isIE5)
+			cursorPos = rHtmlArea.document;
+		else
+			cursorPos = document.getElementById('rHtmlArea').contentWindow.document;
+	}
+}
+
+function Div_Show(str) {
+
+	Div_Close();
+	CursorPos(str);
+
+	 var windowcontents = "";
+
+	if( !isIE5 ) {
+		var windowcontents = document.getElementById(str).contentWindow.document;
+	} else {
+		var windowcontents= eval(str+".document");
+	}
+
+	windowcontents.open();
+	var layerleft=0;
+	var layertop=0;
+	var layerwidth=0;
+	var layerheight=0;
+
+	//좌측메뉴의 공간
+	var leftMenuSize = 228;
+
+	if (str == "emot") {
+		windowcontents.write(getEmoticonHTML());
+		layertop=leftMenuSize+0;layerleft=225;layerwidth=283;layerheight=223;
+	} else if (str == "font_face") {
+		windowcontents.write(getFontFaceHTML());
+		layertop=0;layerleft=leftMenuSize+15;layerwidth=220;layerheight=145;
+	} else if (str == "font_size") {
+		windowcontents.write(getFontSizeHTML());
+		layertop=0;layerleft=leftMenuSize+75;layerwidth=310;layerheight=220;
+	} else if (str == "font_color") {
+		windowcontents.write(getFontColorHTML());
+		layertop=0;layerleft=leftMenuSize+247;layerwidth=213;layerheight=250;
+	} else if (str == "font_bg") {
+		windowcontents.write(getFontBackColorHTML());
+		layertop=0;layerleft=leftMenuSize+281;layerwidth=213;layerheight=270;
+	} else if (str == "bg_color") {
+		windowcontents.write(getBgColorHTML());
+		layertop=0;layerleft=leftMenuSize+191;layerwidth=213;layerheight=162;
+	} else if (str == "img") {
+		windowcontents.write(getImgUploadHTML());
+		layertop=0;layerleft=leftMenuSize+258;layerwidth=213;layerheight=222;
+	} else if (str == "link") {
+		windowcontents.write(getLinkHTML());
+		layertop=0;layerleft=leftMenuSize+327;layerwidth=213;layerheight=222;
+	}
+
+	if (isGecko) { layerwidth += 2;layerheight += 10; }
+
+	windowcontents.close();
+	document.getElementById(str).style.display = "inline";
+	document.getElementById(str).style.left = layerleft + "px";
+	document.getElementById(str).style.height = layerheight + "px";
+	document.getElementById(str).style.width = layerwidth + "px";
+}
+
+function Div_Close() {
+	document.getElementById("font_face").style.display = "none";
+	document.getElementById("font_size").style.display = "none";
+	document.getElementById("font_color").style.display = "none";
+	document.getElementById("font_bg").style.display = "none";
+	document.getElementById("bg_color").style.display = "none";
+	document.getElementById("emot").style.display = "none";
+	document.getElementById("img").style.display = "none";
+	document.getElementById("link").style.display = "none";
+}
+
+function Div_Close_Delay(delaytime) {
+	setTimeout("Div_Close()", delaytime);
+}
+
+
+function Div_Hide(str){
+	eval("document.all." + str).style.display = "none";
+	if (str == "img") {
+		var form = img.upfileForm;
+		fileUploadReset(img.document.getElementById("img_preview"), form);
+	}
+}
+
+function SetHtmlAreaFocus() {
+	if( isIE5 )
+		rHtmlArea.focus();
+	else
+		document.getElementById('rHtmlArea').contentWindow.focus();
+}
+
+function nl2br(src) {
+	return src.replace(/\r?\n/g, "<br>");
+}
+function br2brnl(src) {
+	return src.replace(/<br[^>]*>/gi, "<br>\n");
+}
+
+var isIE5 = 0;
+var isIE7 = 0;
+var isGecko = 0;
+var isIE11 = 0;
+var isHTML = 0;
+var capaHTML = 0;
+
+// 초기 배경색
+var setBgColor		= "#FFFFFF";
+// 초기화 Style..
+var initFontSize	= "12px";
+var initFontFamily	= "Gulim,AppleGothic,sans-serif";
+var initBodyStyle	= "line-height:130%;";
+var cursorPos		= null;
+
+// 초기화...
+var _EDITOR_LOAD_COMPLETE = 0;
+function initEdit()
+{
+	var Agt = navigator.userAgent.toLowerCase();
+
+	if ( navigator.product == "Gecko" ) {
+		capaHTML = 1;
+		isGecko = 1;
+
+		if (Agt.indexOf("rv:11") != -1) { isIE11 = 1;}
+
+	} else if ( Agt.indexOf("msie") != -1 && Agt.indexOf("opera") == -1 ) {
+		if     ( Agt.indexOf("msie 5.0") != -1 ) isIE5 = 1;
+		else if( Agt.indexOf("msie 7") != -1 )   isIE7 = 1;
+		capaHTML = 1;
+	}
+
+	if( capaHTML == 0 ) {
+		isHTML = 1;
+		document.getElementById('rHtmlArea').style.display = "none";
+		document.getElementById('rTextArea').style.backgroundColor = "#F3F3F3";
+		document.getElementById('rTextArea').style.display = "inline";
+
+		return;
+	}
+
+	if( isIE5 ) {
+		rHtmlArea.document.open();
+		rHtmlArea.document.write("<HEAD><STYLE>P {margin-top:0px;margin-bottom:0px;}</STYLE></HEAD><BODY style='font-size:"+initFontSize+"; font-family:"+initFontFamily+";color:#000000;"+initBodyStyle+"' topmargin='5' leftmargin='5'>" + org_body.value + "</BODY>");
+		rHtmlArea.document.close();
+		rHtmlArea.document.designMode = "on";
+	} else {
+		document.getElementById('rHtmlArea').contentWindow.document.open();
+		document.getElementById('rHtmlArea').contentWindow.document.write("<HEAD><STYLE>P {margin-top:0px;margin-bottom:0px;}</STYLE></HEAD><BODY style='font-size:"+initFontSize+"; font-family:"+initFontFamily+";color:#000000;"+initBodyStyle+"' topmargin='5' leftmargin='5'>" + document.getElementById('org_body').value + "</BODY>");
+		document.getElementById('rHtmlArea').contentWindow.document.close();
+		document.getElementById('rHtmlArea').contentWindow.document.designMode = "on";
+	}
+	//  viewSignature("load");
+	//  nametag_view('load');
+
+	_EDITOR_LOAD_COMPLETE = 1;
+}
+
+// Command 실행
+function LayerCommandExec(menu_id,opt) {
+	Div_Close();
+	CommandExec(menu_id,opt);
+//  SetHtmlAreaFocus();
+}
+
+function CommandExec( menu_id, opt )
+{
+	if( isHTML != 0 ) {
+		alert("에디터모드가 아닙니다. 에디터모드로 전환한 후에 사용하셔야 합니다.");
+		return;
+	}
+
+	if( capaHTML == 0 ) {
+		alert("에디터모드를 지원하지 않는 브라우저입니다.");
+		return;
+	}
+
+	SetHtmlAreaFocus();
+
+	if (menu_id == "backcolor" ) setBgColor = opt;
+
+	if ( !isGecko && menu_id == "backcolor" )
+	{
+		if (isIE5) {
+			HtmlArea.document.body.style.backgroundColor = opt;
+		} else {
+			document.getElementById('rHtmlArea').contentWindow.document.body.style.backgroundColor = opt;
+		}
+	}
+	else if ( menu_id == "hr" )
+	{
+		if( !isGecko ) {
+			if( isIE5 )
+				var eEdit = HtmlArea.document.selection.createRange();
+			else
+				var eEdit = document.getElementById('rHtmlArea').contentWindow.document.selection.createRange();
+
+			eEdit.pasteHTML( "<HR/>" );
+		} else {
+			hr = document.getElementById('rHtmlArea').contentWindow.document.createElement("hr");
+			insertNodeAtSelection( document.getElementById('rHtmlArea').contentWindow , hr);
+		}
+		return;
+	}
+	else if( menu_id == "hyperlink")
+	{
+		opt = opt.replace(/^\s*/,'').replace(/\s*$/, '');
+		if (opt.search(/^http:\/\//i)) {
+			opt = "http://" + opt;
+		}
+
+		if (opt.toLowerCase() != "http://")
+		{
+			if( !isGecko ) {
+				var hyper_link = opt;
+
+				if(cursorPos.htmlText==null || cursorPos.htmlText=='' || cursorPos.htmlText==' ') {
+				//cursorPos.pasteHTML("<a href='"+hyper_link+"' target='_blank'>"+hyper_link+"</a>");
+				}
+				else
+				{
+					var thisLink = cursorPos.htmlText;
+					var pattern = "<A href=\"*\"";
+					var matches = ExtractMatches( new RegExp( pattern, "gi" ), thisLink);
+
+					if ( matches.length > 0 ) {
+						var UnLink = thisLink.substring(thisLink.indexOf("blank>")+6,thisLink.indexOf("</A>"));
+						cursorPos.execCommand("UnLink",false,UnLink);
+						thisLink = UnLink;
+					}
+					if ( hyper_link != '' && hyper_link != ' ') cursorPos.pasteHTML("<a href='"+hyper_link+"' target='_blank'>"+thisLink+"</a>");
+				}
+			}
+			else
+			{
+				sel = document.getElementById('rHtmlArea').contentWindow.getSelection();
+
+				if (typeof sel != "undefined") {
+					range = sel.getRangeAt(0);
+				} else {
+					range = document.getElementById('rHtmlArea').contentWindow.document.createRange();
+				}
+				document.getElementById('rHtmlArea').contentWindow.document.execCommand("CreateLink",false , opt);
+			}
+		}
+		link.document.getElementById('linkinput').value = "http://";
+	}
+	else if (menu_id == "emotImage")
+	{
+		menu_id = "InsertImage";
+		if (!isGecko) {
+			if( !opt ) cursorPos.execCommand( menu_id, false, false );
+			else       cursorPos.execCommand( menu_id, "", opt );
+		} else {
+			if( !opt ) document.getElementById('rHtmlArea').contentWindow.document.execCommand( menu_id, false, false );
+			else document.getElementById('rHtmlArea').contentWindow.document.execCommand( menu_id, "", opt );
+		}
+	} else {
+		if( !isGecko && menu_id == 'hilitecolor' ) menu_id = "backcolor";
+
+		if( isIE5 ) {
+			if( !opt ) rHtmlArea.document.execCommand( menu_id, false, false );
+			else rHtmlArea.document.execCommand( menu_id, "", opt );
+		} else {
+			if( !opt ) document.getElementById('rHtmlArea').contentWindow.document.execCommand( menu_id, false, false );
+			else document.getElementById('rHtmlArea').contentWindow.document.execCommand( menu_id, "", opt );
+		}
+	}
+}
+
+function insertNodeAtSelection(win, insertNode)
+{
+  var sel = win.getSelection();
+
+  var range = sel.getRangeAt(0);
+
+  sel.removeAllRanges();
+
+  range.deleteContents();
+
+  var container = range.startContainer;
+  var pos = range.startOffset;
+
+  range=document.createRange();
+
+  if (container.nodeType==3 && insertNode.nodeType==3) {
+    container.insertData(pos, insertNode.nodeValue);
+
+    range.setEnd(container, pos+insertNode.length);
+    range.setStart(container, pos+insertNode.length);
+
+  } else {
+    var afterNode;
+    if (container.nodeType==3) {
+
+      var textNode = container;
+      container = textNode.parentNode;
+      var text = textNode.nodeValue;
+
+      var textBefore = text.substr(0,pos);
+      var textAfter = text.substr(pos);
+
+      var beforeNode = document.createTextNode(textBefore);
+      afterNode = document.createTextNode(textAfter);
+
+      container.insertBefore(afterNode, textNode);
+      container.insertBefore(insertNode, afterNode);
+      container.insertBefore(beforeNode, insertNode);
+
+      container.removeChild(textNode);
+    } else {
+      afterNode = container.childNodes[pos];
+      container.insertBefore(insertNode, afterNode);
+    }
+
+    range.setEnd(afterNode, 0);
+    range.setStart(afterNode, 0);
+  }
+
+  sel.addRange(range);
+}
+
+function ExtractMatches( re, text ) {
+  var results = new Array() ;
+  var arr = re.exec(text)
+  while(arr != null)
+  {
+    var match = new Match() ;
+    match.Text = arr[0] ;
+    for (var i=1; i<arr.length; i++)
+    {
+      match.Groups[i-1] = arr[i] ;
+    }
+    results[results.length] = match ;
+    arr = re.exec(text) ;
+  }
+  return results ;
+}
+
+function Match() {
+  this.Text = null ;
+  this.Groups = new Array() ;
+}
+
+function getOrgSource() {
+  var ResultContext;
+  if (isHTML == 0) {
+    if( isIE5 )
+      ResultContext = rHtmlArea.document.body.innerHTML;
+    else
+      ResultContext = document.getElementById('rHtmlArea').contentWindow.document.body.innerHTML;
+  } else {
+    ResultContext = document.getElementById('rTextArea').value;
+  }
+
+  return ResultContext;
+}
+
+function changeHtml(toHtml)
+{
+  alertBeforeUnload = false; // 화면전환 alert flag
+
+//  alert(document.getElementsByName('nowEditType')[0].value);
+  // 0:editor mode, 1:html(textarea) mode, 2:text(textarea) mode
+
+  if (capaHTML == 0 && toHtml == 0) {
+    alert("죄송합니다. 현재 에디터의 기능은, \n\nMSIE계열과 모질라계열 브라우져에서만 가능합니다.");
+    return;
+  }
+
+  var szContent = getOrgSource();
+  if (isHTML == 2) szContent = nl2br(szContent);
+
+  if (toHtml == 0 && isHTML != 0) { /*** change to EDITOR ***/
+    if (isHTML == 1 && isGecko) szContent = szContent.replace(/[\r\n]/g, "");
+
+    document.getElementById('TextArea').style.display = "none";
+    document.getElementById('HtmlArea').style.display = "inline";
+
+    if( isIE5 ) {
+      rHtmlArea.document.body.innerHTML = szContent;
+      rHtmlArea.document.designMode = "on";
+    } else {
+      document.getElementById('rHtmlArea').contentWindow.document.body.innerHTML = szContent;
+      document.getElementById('rHtmlArea').contentWindow.document.designMode = "on";
+    }
+
+    if (!isGecko && isHTML == 1) {
+//      if (szContent.search(/view_attach\.asp\?target=/) != -1) {
+        alert('첨부하신 이미지가 보이지 않을 경우,\n' +
+              '이미지영역 위에 마우스의 오른쪽 버튼을 클릭하시고\n' +
+              '"그림표시"를 선택하시면 됩니다.');
+//      }
+    }
+
+    isHTML = 0;
+
+
+
+  } else if (toHtml == 1 && isHTML != 1) { /*** change to HTML ***/
+    szContent = br2brnl(szContent);
+
+    document.getElementById('HtmlArea').style.display = "none";
+    document.getElementById('TextArea').style.display = "inline";
+    document.getElementById('rTextArea').value = szContent;
+
+    isHTML = 1;
+
+  } else if (toHtml == 2 && isHTML != 2) { /*** change to TEXT ***/
+    if (!confirm("텍스트모드로 전환하시면 글자체, 글자크기, 이미지 등의 HTML 태그 정보가 사라지게 됩니다.\n\n계속하시겠습니까?")) return;
+
+    if (isHTML == 0) {
+      if (!isGecko) {
+        if( isIE5 )
+          szContent = rHtmlArea.document.body.innerText;
+        else
+          szContent = document.getElementById('rHtmlArea').contentWindow.document.body.innerText;
+      } else {
+        szContent = document.getElementById('rHtmlArea').contentWindow.document.body.innerHTML;
+        szContent = br2brnl(szContent);
+        szContent = szContent.replace(/<[^>]*>/g, "");
+      }
+    } else if (isHTML == 1) {
+      szContent = szContent.replace(/<[^>]*>/g, "");
+    }
+
+    document.getElementById('HtmlArea').style.display = "none";
+    document.getElementById('TextArea').style.display = "inline";
+    document.getElementById('rTextArea').value = szContent;
+
+    isHTML = 2;
+  }
+
+
+  if(toHtml == 2) document.getElementsByName('strhtml')[0].value = "0";
+  else  document.getElementsByName('strhtml')[0].value = "2";
+  toggleLayers(toHtml);
+}
+
+
+function GetHtmlSource() {
+  var _setBgColor = "#FFFFFF";
+  var szContent = getOrgSource();
+  if (isHTML == 0) {
+    szContent = br2brnl(szContent);
+  } else if (isHTML == 2) {
+    szContent = szContent.replace(/</g, "&lt;");
+    szContent = nl2br(szContent);
+  }
+
+    if (isHTML != 2 && if_letter._CLICK_ID_ == "") _setBgColor = setBgColor;
+
+  /******************** letter skin start ********************/
+  var bodyHtml = '';
+  __UPIMG = document.getElementById('rLetterUp').contentWindow.document.body.innerHTML;
+  __BGIMG = document.getElementById('rHtmlArea').contentWindow.document.body.background;
+  __DNIMG = document.getElementById('LetterDn').innerHTML;
+
+  if (if_letter._CLICK_ID_ != "") {
+    bodyHtml += "<table width=100% border=0 cellpadding=0 cellspacing=0>";
+    bodyHtml += "<tr><td valign=top>"+__UPIMG+"</td></tr>";
+    bodyHtml += "<tr><td background='"+__BGIMG+"' valign=top style='word-wrap:break-word;padding:5 10 5 10;height:350px;width:660px'>"+ szContent +"</td></tr>";
+    bodyHtml += "<tr><td valign=bottom>"+__DNIMG+"</td></tr>";
+    bodyHtml += "</table>";
+    } else {
+        bodyHtml = szContent;
+    }
+    /******************** letter skin end ********************/
+
+  var outerszContent = "<HTML><HEAD><STYLE>P{margin-top:2px;margin-bottom:2px;}</STYLE></HEAD><BODY><DIV style='width:700px;height:150px;font-size:"+initFontSize+"; font-family:"+initFontFamily+";background:"+_setBgColor+"'>" + bodyHtml + "</DIV></BODY><HTML>";
+
+
+  // 최종 편지지변호를 저장한다.
+  document.mailform.letternum.value = if_letter._CLICK_ID_;
+
+  return outerszContent;
+}
+
+function SetHtmlSource(SetConText) {
+  var ResultContext;
+  if (isHTML != 0) {
+    if( isIE5 )
+      document.getElementById('rTextArea').value = SetConText;
+
+    else
+      document.getElementById('rTextArea').value = SetConText;
+
+  } else {
+    if( isIE5 )
+      rHtmlArea.document.body.innerHTML = SetConText;
+    else
+      document.getElementById('rHtmlArea').contentWindow.document.body.innerHTML = SetConText;
+  }
+}
+
+function setDefaultEditor(toHtml) {
+  if (toHtml == 0) return;
+
+  if (document.getElementById('rHtmlArea') == null) {
+    setTimeout("setDefaultEditor(" + toHtml + ")", 100);
+  } else {
+    changeHtml(toHtml);
+  }
+}
+
+
+function fileCheck(preview,form) {
+	file = form.upfile.value;
+	pathpoint = file.lastIndexOf('.');
+	filepoint = file.substring(pathpoint+1,file.length);
+	filetype = filepoint.toLowerCase();
+
+	if (filetype=='jpg'||filetype=='gif'||filetype=='png'||filetype=='jpeg'||filetype=='bmp') {
+		if ( isGecko ) {
+			preview.innerHTML = '<font color=\"B0B0B0\">미리보기는 MSIE 6.0이하에서만<br>가능 합니다.</font></td>';
+		} else {
+			if (isIE7) {
+				preview.innerHTML = '<font color=\"B0B0B0\">미리보기는 MSIE 6.0이하에서만<br>가능 합니다.</font></td>';
+			} else {
+				preview.innerHTML = "<img src='" + file + "' width='180' height='120'>";
+			}
+		}
+	}
+	else
+	{
+		alert('이미지 파일만 업로드 하실 수 있습니다.');
+		fileUploadReset(preview, form);
+		return false;
+	}
+
+	if(filetype=='bmp') {
+		upload = confirm('BMP 파일은 웹상에서 사용하기엔 적절한 이미지 포맷이 아닙니다.\n그래도 계속 하시겠습니까?');
+		if(!upload) return false;
+	}
+}
+
+function fileUpload(preview, form) {
+	if( isHTML != 0 ) {
+		alert("에디터모드가 아닙니다. 에디터모드로 전환한 후에 사용하셔야 합니다.");
+		return;
+	}
+	//form.target = "upfileFrame";
+
+	form.submit();
+	fileUploadReset(preview, form);
+}
+
+function fileUploadReset(preview, form) {
+	form.reset();
+	//  preview.innerHTML = "<font color=\"818181\">이미지가 전송중입니다.<br>잠시만 기다려 주세요</font><br><br><img src='/bbs/editor/images/progressbar.gif' width=140></td>";
+	preview.innerHTML = "<font color=\"818181\">이미지가 전송중입니다.<br>잠시만 기다려 주세요</font><br><br><img src='/bbs/editor/images/progress.gif' width=35></td>";
+}
+
+
+function getEmoticonHTML() {
+	var emothtml = commonStyle;
+
+	emothtml += "<div  style=\"position:absolute;top:0;left:0;width:283;border:1px solid #B9B9B9;background-color:#F6F6F6;display:inline\">";
+	emothtml += "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">";
+	emothtml += "<tr>";
+	emothtml += "<td valign=\"top\" align=\"right\" style=\"padding:6 6 0 0\"><img src=\"/bbs/editor/images/btn_exit.gif\" width=\"7\" height=\"7\" border=\"0\" class=\"hand\" onclick=\"parent.Div_Hide('emot')\">";
+	emothtml += "</td></tr><tr>";
+	emothtml += "<td style=\"padding:0 8 8 8\" bgcolor=\"#F6F6F6\">";
+	emothtml += " <iframe src=./emoticon.html scrolling=no frameborder=0 width=260 height=200 marginheight=0 marginweight=0>";
+	emothtml += "</td></tr></table></div>";
+
+	return emothtml;
+}
+
+function getFontFaceHTML()
+{
+	var fontfacehtml = commonStyle;
+	fontfacehtml+="<div  style=\"position:absolute;top:0;left:0;width:220px;border:1px solid #B9B9B9;background-color:#F6F6F6;display:inline\">";
+	//fontfacehtml+="<div  style=\"position:absolute;border:1px solid #B9B9B9;background-color:#F6F6F6;display:inline\">";
+
+	fontfacehtml+="<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">";
+	fontfacehtml+="<tr>";
+	fontfacehtml+="<td align=\"right\" style=\"padding:6 6 0 0\"><img src=\"/bbs/editor/images/btn_exit.gif\" width=\"7\" height=\"7\" border=\"0\" class=\"hand\" onclick=\"parent.Div_Hide('font_face')\"></td>";
+	fontfacehtml+="</tr>";
+	fontfacehtml+="<tr>";
+	fontfacehtml+="<td style=\"line-height:15px;padding:0 0 10 10\">";
+	fontfacehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontname\",\"돋움\");'><font face=\"돋움\">가나다라마바사 (돋움)</font></a><br>";
+	fontfacehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontname\",\"굴림\");'><font face=\"굴림\">가나다라마바사 (굴림)</font></a><br>";
+	fontfacehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontname\",\"바탕\");'><font face=\"바탕\">가나다라마바사 (바탕)</font></a><br>";
+	fontfacehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontname\",\"궁서\");'><font face=\"궁서\">가나다라마바사 (궁서)</font></a><br>";
+	fontfacehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontname\",\"Arial\");'><font face=\"Arial\">ABCDEFGHIJKL (Arial)</font></a><br>";
+	fontfacehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontname\",\"Tahoma\");'><font face=\"Tahoma\">ABCDEFGHIJKL (Tahoma)</font></a><br>";
+	fontfacehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontname\",\"Times New Roman\");'><font face=\"Times New Roman\">ABCDEFGHIJKL (Times New Roman)</font></a><br>";
+	fontfacehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontname\",\"Verdana\");'><font face=\"Verdana\">ABCDEFGHIJKL (Verdana)</font></a></td>";
+	fontfacehtml+="</tr>";
+	fontfacehtml+="</table>";
+	fontfacehtml+="</div>";
+	//fontfacehtml+="</body></html>";
+	return fontfacehtml;
+}
+
+function getFontSizeHTML()
+{
+	var fontsizehtml = commonStyle;
+	fontsizehtml+="<div  style=\"position:absolute;top:0;left:0;width:310; border:1px solid #B9B9B9;background-color:#F6F6F6;display:inline\">";
+	fontsizehtml+="<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">";
+	fontsizehtml+="<tr>";
+	fontsizehtml+="<td align=\"right\" style=\"padding:6 6 0 0\"><img src=\"/bbs/editor/images/btn_exit.gif\" width=\"7\" height=\"7\" border=\"0\" class=\"hand\" onclick=\"parent.Div_Hide('font_size')\"></td>";
+	fontsizehtml+="</tr>";
+	fontsizehtml+="<tr>";
+	fontsizehtml+="<td style=\"line-height:1.2;padding:0 0 10 10\">";
+	fontsizehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontsize\",\"1\");'><font size=1>가나다라마바사 (8pt)</font></a><br>";
+	fontsizehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontsize\",\"2\");'><font size=2>가나다라마바사 (10pt)</font></a><br>";
+	fontsizehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontsize\",\"3\");'><font size=3>가나다라마바사 (12pt)</font></a><br>";
+	fontsizehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontsize\",\"4\");'><font size=4>가나다라마바사 (14pt)</font></a><br>";
+	fontsizehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontsize\",\"5\");'><font size=5>가나다라마바사 (18pt)</font></a><br>";
+	fontsizehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontsize\",\"6\");'><font size=6>가나다라마 (24pt)</font></a><br>";
+	fontsizehtml+="<a href='javascript:;' onClick='parent.LayerCommandExec(\"fontsize\",\"7\");'><font size=7>가나다 (36pt)</font></a>";
+	fontsizehtml+="</td>";
+	fontsizehtml+="</tr>";
+	fontsizehtml+="</table>";
+	fontsizehtml+="</div>";
+	return fontsizehtml;
+}
+
+function getFontColorHTML()
+{
+	var fontcolorhtml=commonStyle;
+	fontcolorhtml+="<div  style=\"position:absolute;top:0;left:0;width:213;border:1px solid #B9B9B9;background-color:#F6F6F6;display:inline\">";
+	fontcolorhtml+="<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">";
+	fontcolorhtml+="<tr>";
+	fontcolorhtml+="<td height=\"17\" valign=\"top\" align=\"right\" style=\"padding:6 6 0 0\"><img src=\"/bbs/editor/images/btn_exit.gif\" width=\"7\" height=\"7\" border=\"0\" class=\"hand\" onclick=\"parent.Div_Hide('font_color')\"></td>";
+	fontcolorhtml+="</tr>";
+	fontcolorhtml+="<tr>";
+	fontcolorhtml+="<td style=\"padding:0 8 8 8\" bgcolor=\"#F6F6F6\">";
+	fontcolorhtml+="<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" bgcolor=\"#FFFFFF\">";
+	fontcolorhtml+="<tr>";
+	fontcolorhtml+="<td style=\"padding:5 0 6 0\" align=\"center\">";
+	fontcolorhtml+="<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding:0 3 0 3\">";
+	fontcolorhtml+="<tr height=\"18\">";
+	fontcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"forecolor\",\"#008000\");'><font color=\"#008000\">가나다라마바사</font></a></td>";
+	fontcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"forecolor\",\"#993366\");'><font color=\"#993366\">가나다라마바사</font></a></td>";
+	fontcolorhtml+="</tr>";
+	fontcolorhtml+="<tr height=\"18\">";
+	fontcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"forecolor\",\"#CC9900\");'><font color=\"#CC9900\">가나다라마바사</font></a></td>";
+	fontcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"forecolor\",\"#9B18C1\");'><font color=\"#9B18C1\">가나다라마바사</font></a></td>";
+	fontcolorhtml+="</tr>";
+	fontcolorhtml+="<tr height=\"18\">";
+	fontcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"forecolor\",\"#FF9900\");'><font color=\"#FF9900\">가나다라마바사</font></a></td>";
+	fontcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"forecolor\",\"#0000FF\");'><font color=\"#0000FF\">가나다라마바사</font></a></td>";
+	fontcolorhtml+="</tr>";
+	fontcolorhtml+="<tr height=\"18\">";
+	fontcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"forecolor\",\"#FF0000\");'><font color=\"#FF0000\">가나다라마바사</font></a></td>";
+	fontcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"forecolor\",\"#177FCD\");'><font color=\"#177FCD\">가나다라마바사</font></a></td>";
+	fontcolorhtml+="</tr>";
+	fontcolorhtml+="<tr height=\"18\">";
+	fontcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"forecolor\",\"#FF3399\");'><font color=\"#FF3399\">가나다라마바사</font></a></td>";
+	fontcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"forecolor\",\"#8E8E8E\");'><font color=\"#8E8E8E\">가나다라마바사</font></a></td>";
+	fontcolorhtml+="</tr>";
+	fontcolorhtml+="</table>";
+	fontcolorhtml+=getCommonColorHTML("forecolor");
+	fontcolorhtml+="</td>";
+	fontcolorhtml+="</tr>";
+	fontcolorhtml+="</table>";
+	fontcolorhtml+="</td>";
+	fontcolorhtml+="</tr>";
+	fontcolorhtml+="</table>";
+	fontcolorhtml+="</div>";
+	return fontcolorhtml;
+}
+
+function getFontBackColorHTML()
+{
+	var fontbkcolorhtml=commonStyle;
+	fontbkcolorhtml+="<div  style=\"position:absolute;top:0;left:0;width:213px;border:1px solid #B9B9B9;background-color:#F6F6F6;display:inline\">";
+	fontbkcolorhtml+="<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">";
+	fontbkcolorhtml+="<tr>";
+	fontbkcolorhtml+="<td height=\"17\" valign=\"top\" align=\"right\" style=\"padding:6 6 0 0\"><img src=\"/bbs/editor/images/btn_exit.gif\" width=\"7\" height=\"7\" border=\"0\" class=\"hand\" onclick=\"parent.Div_Hide('font_bg')\"></td>";
+	fontbkcolorhtml+="</tr>";
+	fontbkcolorhtml+="<tr>";
+	fontbkcolorhtml+="<td style=\"padding:0 8 8 8\" bgcolor=\"#F6F6F6\">";
+	fontbkcolorhtml+="<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" bgcolor=\"#FFFFFF\">";
+	fontbkcolorhtml+="<tr>";
+	fontbkcolorhtml+="<td style=\"padding:7 0 6 0\" align=\"center\">";
+	fontbkcolorhtml+="<table border=\"0\" cellpadding=\"0\" cellspacing=\"3\">";
+	fontbkcolorhtml+="<tr height=\"18\">";
+	fontbkcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"hilitecolor\",\"#008000\");'><font color=\"#FFFFFF\" style=\"background-color:#008000\">가나다라마바사</font></a></td>";
+	fontbkcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"hilitecolor\",\"#993366\");'><font color=\"#FFFFFF\" style=\"background-color:#993366\">가나다라마바사</font></a></td>";
+	fontbkcolorhtml+="</tr>";
+	fontbkcolorhtml+="<tr height=\"18\">";
+	fontbkcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"hilitecolor\",\"#CC9900\");'><font color=\"#FFFFFF\" style=\"background-color:#CC9900\">가나다라마바사</font></a></td>";
+	fontbkcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"hilitecolor\",\"#9B18C1\");'><font color=\"#FFFFFF\" style=\"background-color:#9B18C1\">가나다라마바사</font></a></td>";
+	fontbkcolorhtml+="</tr>";
+	fontbkcolorhtml+="<tr height=\"18\">";
+	fontbkcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"hilitecolor\",\"#FF9900\");'><font color=\"#FFFFFF\" style=\"background-color:#FF9900\">가나다라마바사</font></a></td>";
+	fontbkcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"hilitecolor\",\"#0000FF\");'><font color=\"#FFFFFF\" style=\"background-color:#0000FF \">가나다라마바사</font></a></td>";
+	fontbkcolorhtml+="</tr>";
+	fontbkcolorhtml+="<tr height=\"18\">";
+	fontbkcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"hilitecolor\",\"#FF0000\");'><font color=\"#FFFFFF\" style=\"background-color:#FF0000\">가나다라마바사</font></a></td>";
+	fontbkcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"hilitecolor\",\"#177FCD\");'><font color=\"#FFFFFF\" style=\"background-color:#177FCD\">가나다라마바사</font></a></td>";
+	fontbkcolorhtml+="</tr>";
+	fontbkcolorhtml+="<tr height=\"18\">";
+	fontbkcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"hilitecolor\",\"#FF3399\");'><font color=\"#FFFFFF\" style=\"background-color:#FF3399\">가나다라마바사</font></a></td>";
+	fontbkcolorhtml+="<td><a href='javascript:;' onClick='parent.LayerCommandExec(\"hilitecolor\",\"#8E8E8E\");'><font color=\"#FFFFFF\" style=\"background-color:#8E8E8E\">가나다라마바사</font></a></td>";
+	fontbkcolorhtml+="</tr>";
+	fontbkcolorhtml+="</table>";
+	fontbkcolorhtml+=getCommonColorHTML("hilitecolor");
+	fontbkcolorhtml+="</td>";
+	fontbkcolorhtml+="</tr>";
+	fontbkcolorhtml+="</table>";
+	fontbkcolorhtml+="</td>";
+	fontbkcolorhtml+="</tr>";
+	fontbkcolorhtml+="</table>";
+	fontbkcolorhtml+="</div>";
+	return fontbkcolorhtml;
+}
+
+function getBgColorHTML()
+{
+	var bgcolorhtml=commonStyle;
+	bgcolorhtml+="<div  style=\"position:absolute;top:0;left:0;width:213;border:1px solid #B9B9B9;background-color:#F6F6F6;display:inline\">";
+	bgcolorhtml+="<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">";
+	bgcolorhtml+="<tr>";
+	bgcolorhtml+="<td height=\"17\" valign=\"top\" align=\"right\" style=\"padding:6 6 0 0\"><img src=\"/bbs/editor/images/btn_exit.gif\" width=\"7\" height=\"7\" border=\"0\" class=\"hand\" onclick=\"parent.Div_Hide('bg_color')\"></td>";
+	bgcolorhtml+="</tr>";
+	bgcolorhtml+="<tr>";
+	bgcolorhtml+="<td style=\"padding:0 8 8 8\" bgcolor=\"#F6F6F6\">";
+	bgcolorhtml+="<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" bgcolor=\"#FFFFFF\">";
+	bgcolorhtml+="<tr>";
+	bgcolorhtml+="<td style=\"padding:7 0 6 0\" align=\"center\">";
+	bgcolorhtml+=getCommonColorHTML("backcolor");
+	bgcolorhtml+="</td>";
+	bgcolorhtml+="</tr>";
+	bgcolorhtml+="</table>";
+	bgcolorhtml+="</td>";
+	bgcolorhtml+="</tr>";
+	bgcolorhtml+="</table>";
+	bgcolorhtml+="</div>";
+	return bgcolorhtml;
+}
+
+function getCommonColorHTML(tagid)
+{
+	var colors = new Array(
+		"#ffffff","#e5e4e4","#d9d8d8","#c0bdbd","#a7a4a4","#8e8a8b","#827e7f","#767173","#5c585a","#000000",
+		"#fefcdf","#fef4c4","#feed9b","#fee573","#ffed43","#f6cc0b","#e0b800","#c9a601","#ad8e00","#8c7301",
+		"#ffded3","#ffc4b0","#ff9d7d","#ff7a4e","#ff6600","#e95d00","#d15502","#ba4b01","#a44201","#8d3901",
+		"#ffd2d0","#ffbab7","#fe9a95","#ff7a73","#ff483f","#fe2419","#f10b00","#d40a00","#940000","#6d201b",
+		"#ffdaed","#ffb7dc","#ffa1d1","#ff84c3","#ff57ac","#fd1289","#ec0078","#d6006d","#bb005f","#9b014f",
+		"#fcd6fe","#fbbcff","#f9a1fe","#f784fe","#f564fe","#f546ff","#f328ff","#d801e5","#c001cb","#8f0197",
+		"#e2f0fe","#c7e2fe","#add5fe","#92c7fe","#6eb5ff","#48a2ff","#2690fe","#0162f4","#013add","#0021b0",
+		"#d3fdff","#acfafd","#7cfaff","#4af7fe","#1de6fe","#01deff","#00cdec","#01b6de","#00a0c2","#0084a0",
+		"#edffcf","#dffeaa","#d1fd88","#befa5a","#a8f32a","#8fd80a","#79c101","#3fa701","#307f00","#156200",
+		"#d4c89f","#daad88","#c49578","#c2877e","#ac8295","#c0a5c4","#969ac2","#92b7d7","#80adaf","#9ca53b"
+	);
+
+	var commoncolorhtml=commonStyle;
+	commoncolorhtml+="<table border='0' cellpadding='0' cellspacing='2' bgcolor='#FFFFFF'>";
+
+	var num = 0;
+
+	for (var i = 0; i < 10; i++) {
+		commoncolorhtml+="<tr height='10'>";
+		for (var j = 0; j < 10; j++) {
+			var color = colors[num];
+			commoncolorhtml+="<td width='16' bgcolor='"+color+"'><a href=\"javascript:;\" onClick=\"parent.LayerCommandExec('"+tagid+"','"+color+"');\"><font color='"+color+"' style='font-size:4pt;'>AAAAA</font></a></td>";
+			num++;
+		}
+		commoncolorhtml+="</tr>";
+	}
+	commoncolorhtml+="</table>";
+	return commoncolorhtml;
+}
+
+function getImgUploadHTML()
+{
+	var imguploadhtml=commonStyle;
+	imguploadhtml+="<div id=\"img_div\" style=\"position:absolute;top:0;left:0;width:213;border:1px solid #B9B9B9;background-color:#F6F6F6;display:inline\">";
+	imguploadhtml+="<html>";
+	imguploadhtml+="<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>";
+	imguploadhtml+="<body>";
+	imguploadhtml+="<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">";
+	imguploadhtml+="<FORM name='upfileForm' action='/bbs/editor/imgUpload.asp' method='post' enctype='multipart/form-data'>";
+	imguploadhtml+="<input type='hidden' name='UCC_RandomID' value='<%=UCC_RandomID%>'>";
+	imguploadhtml+="<tr>";
+	imguploadhtml+="<td height=\"17\" valign=\"top\" align=\"right\" style=\"padding:6 6 0 0\"><img src=\"/bbs/editor/images/btn_exit.gif\" width=\"7\" height=\"7\" border=\"0\" class=\"hand\" onclick=\"parent.Div_Hide('img')\"></td>";
+	imguploadhtml+="</tr><tr>";
+	imguploadhtml+="<td height=\"24\" valign=\"top\" style=\"padding:0 0 0 8\"><input type='file' name='upfile' size=14 style='border:1px solid #E2E2E2;width:195px; height=18px'  onChange=\"parent.fileCheck(document.getElementById('img_preview'), document.upfileForm);\"><br><br style='line-height:3px'>";
+
+	imguploadhtml+="<input type='radio' name='imgAlign' value='top'><img src='/bbs/editor/images/img_top.gif' align=absmiddle> ";
+	imguploadhtml+="<input type='radio' name='imgAlign' value='left'><img src='/bbs/editor/images/img_left.gif' align=absmiddle> ";
+	imguploadhtml+="<input type='radio' name='imgAlign' value='right'><img src='/bbs/editor/images/img_right.gif' align=absmiddle><br><br style='line-height:3px'></td>";
+
+	imguploadhtml+="</tr><tr>";
+	imguploadhtml+="<td align=\"center\">";
+	imguploadhtml+="<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"194\" height=\"130\" bgcolor=\"#FFFFFF\">";
+	imguploadhtml+="<tr><td align=\"center\" class=\"f11\" id='img_preview'><font color=\"#818181\">미리보기</font></td></tr></table>";
+	imguploadhtml+="</td></tr><tr>";
+	imguploadhtml+="<td height=\"27\" valign=\"top\" align=\"center\" style=\"padding:6px 0 0 0;\"><a onClick=\"parent.fileUpload(document.getElementById('img_preview'), document.upfileForm);\"><img class='hand' src=\"/bbs/editor/images/btn_select.gif\" width=\"49\" height=\"18\" border=\"0\"></a><br><br></td>";
+	imguploadhtml+="</tr></FORM>";
+	imguploadhtml+="</table>";
+	imguploadhtml+="<iframe name=\"upfileFrame\" width=0 height=0 frameborder=0></iframe>";
+
+	imguploadhtml+="</body>";
+	imguploadhtml+="</html>";
+	imguploadhtml+="</div>";
+
+	return imguploadhtml;
+}
+
+function getLinkHTML()
+{
+	var linkhtml=commonStyle;
+	linkhtml+="<div id=\"link_div\" style=\"position:absolute;top:0;left:0;width:213;border:1px solid #B9B9B9;background-color:#F6F6F6;display:inline\">";
+	linkhtml+="<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">";
+	linkhtml+="<tr><td height=\"17\" valign=\"top\" align=\"right\" style=\"padding:6 6 0 0\"><img src=\"/bbs/editor/images/btn_exit.gif\" width=\"7\" height=\"7\" border=\"0\" class=\"hand\" onclick=\"parent.Div_Hide('link')\"></td>";
+	linkhtml+="</tr><tr>";
+	linkhtml+="<td height=\"24\" valign=\"top\" style=\"padding:0 0 0 8\"><input type=\"text\" id=\"linkinput\" name=\"linkinput\" style=\"width:195;height:18;border:1px solid #B9B9B9\" value=\"http://\"></td>";
+	linkhtml+="</tr><tr>";
+	linkhtml+="<td height=\"60\" valign=\"top\" style=\"padding:3 0 0 15\" class=\"f11\"><font color=\"#787878\">링크주소(URL)를 넣어주세요.<br>";
+	linkhtml+="예) http://www.naver.com</font><br>";
+	linkhtml+="<font color=\"#F57E1E\">“http://” 를 꼭 써야 합니다</font></td>";
+	linkhtml+="</tr><tr>";
+	linkhtml+="<td height=\"27\" valign=\"top\" align=\"center\"><a href='javascript:;'  onClick='parent.LayerCommandExec(\"hyperlink\",document.getElementById(\"linkinput\").value)'><img src=\"/bbs/editor/images/btn_confirm.gif\" width=\"49\" height=\"18\" border=\"0\"></a></td>";
+	linkhtml+="</tr></table></div>";
+	return linkhtml;
+}
+
+function toggleLayers(toHtml) {
+	document.getElementById("toHtmlButton0").style.display = 'none';
+	document.getElementById("toHtmlButton1").style.display = 'none';
+	document.getElementById("toHtmlButton2").style.display = 'none';
+	document.getElementById("toHtmlButton"+toHtml).style.display = 'block';
+}
+
+
+function imginsert(url, type) {
+	rHtmlArea.focus();
+
+//이미지 삽입
+
+//    if( !isGecko ) {
+//        if( isIE5 )
+//         var eEdit = rHtmlArea.document.selection.createRange();
+//        else
+	var eEdit = document.getElementById('rHtmlArea').contentWindow.document.selection.createRange();
+//	var eEdit = document.getElementById('rHtmlArea').contentWindow.document.createRange();
+
+	//eEdit.select();
+
+	if(type!="") {
+		if (type == 'top')
+			eEdit.pasteHTML("<center><img src='"+ url + "' align='" + type + "'></center><br>");
+		else
+			eEdit.pasteHTML("<br><img src='"+ url + "' align='" + type + "' vspace='7' hspace='7'>");
+	} else {
+		eEdit.pasteHTML("<img src='"+ url + "'>");
+	}
+
+//      } else {
+//        hr = document.getElementById('rHtmlArea').contentWindow.document.createElement("hr");
+//        insertNodeAtSelection( document.getElementById('rHtmlArea').contentWindow , hr);
+//      }
+}
+
+/*
+function imginsert(url, type) {
+	rHtmlArea.focus();
+
+//이미지 삽입
+
+	if( !isGecko ) {
+		if( isIE5 )
+			var eEdit = rHtmlArea.document.selection.createRange();
+        else
+			var eEdit = document.getElementById('rHtmlArea').contentWindow.document.selection.createRange();
+
+			eEdit.select();
+
+			if(type!="") {
+				if (type == 'top')
+					eEdit.pasteHTML("<center><img src='"+ url + "' align='" + type + "'></center><br>");
+				else
+					eEdit.pasteHTML("<br><img src='"+ url + "' align='" + type + "' vspace='7' hspace='7'>");
+			} else {
+				eEdit.pasteHTML("<img src='"+ url + "'>");
+			}
+
+	} else {
+		hr = document.getElementById('rHtmlArea').contentWindow.document.createElement("hr");
+		insertNodeAtSelection( document.getElementById('rHtmlArea').contentWindow , hr);
+	}
+}
+*/
+
+window.onload = initEdit;
+</script>
+
+<div ID="toHtmlButton0" STYLE="display:inline">
+<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td><a href="javascript:;" onClick="changeHtml(0);"><img src="/bbs/editor/images/type1on.gif" border="0"></a></td>
+		<td><a href="javascript:;" onClick="changeHtml(1);"><img src="/bbs/editor/images/type2.gif" border="0"></a></td>
+		<td><a href="javascript:;" onClick="changeHtml(2);"><img src="/bbs/editor/images/type3.gif" border="0"></a></td>
+	</tr>
+</table>
+</div>
+<div ID="toHtmlButton1" STYLE="display:none">
+	<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td><a href="javascript:;" onClick="changeHtml(0);"><img src="/bbs/editor/images/type1.gif" border="0"></a></td>
+			<td><a href="javascript:;" onClick="changeHtml(1);"><img src="/bbs/editor/images/type2on.gif" border="0"></a></td>
+			<td><a href="javascript:;" onClick="changeHtml(2);"><img src="/bbs/editor/images/type3.gif" border="0"></a></td>
+		</tr>
+	</table>
+</div>
+<div ID="toHtmlButton2" STYLE="display:none">
+	<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td><a href="javascript:;" onClick="changeHtml(0);"><img src="/bbs/editor/images/type1.gif" border="0"></a></td>
+			<td><a href="javascript:;" onClick="changeHtml(1);"><img src="/bbs/editor/images/type2.gif" border="0"></a></td>
+			<td><a href="javascript:;" onClick="changeHtml(2);"><img src="/bbs/editor/images/type3on.gif" border="0"></a></td>
+		</tr>
+	</table>
+</div>
+<table border="0" cellpadding="0" cellspacing="0" style="border:1px solid #CDCDCD;" width="100%">
+	<tr>
+		<td height="30" bgcolor="#E7E7E7" valign="top"><!-- 기본기능 -->
+
+			<table border="0" cellpadding="0" cellspacing="0" height="30">
+				<tr align="center">
+					<td width="4"></td>
+					<td width="50"><img src="/bbs/editor/images/f01.gif" width="50" height="20" border="0" name="f01" onMouseOver="imgOver('f01')" onMouseOut="imgOut('f01')" class="hand" onClick="Div_Show('font_face')"></td>
+					<td width="10"><img src="/bbs/editor/images/bar.gif" width="2" height="18" border="0"></td>
+					<td width="61"><img src="/bbs/editor/images/f02.gif" width="61" height="20" border="0" name="f02" onMouseOver="imgOver('f02')" onMouseOut="imgOut('f02')" class="hand" onClick="Div_Show('font_size')"></td>
+					<td width="10"><img src="/bbs/editor/images/bar.gif" width="2" height="18" border="0"></td>
+					<td width="25"><img src="/bbs/editor/images/f03.gif" width="23" height="20" border="0" name="f03" onClick="CommandExec('bold',0);" onMouseOver="imgOver('f03')" onMouseOut="imgOut('f03')" class="hand" alt="볼드"></td>
+					<td width="25"><img src="/bbs/editor/images/f04.gif" width="23" height="20" border="0" name="f04" onClick="CommandExec('underline',0);" onMouseOver="imgOver('f04')" onMouseOut="imgOut('f04')" class="hand" alt="밑줄"></td>
+					<td width="25"><img src="/bbs/editor/images/f05.gif" width="23" height="20" border="0" name="f05" onClick="CommandExec('italic',0);" onMouseOver="imgOver('f05')" onMouseOut="imgOut('f05')" class="hand" alt="기울임"></td>
+					<td width="25"><img src="/bbs/editor/images/f06.gif" width="23" height="20" border="0" name="f06" onClick="CommandExec('strikethrough',0);" onMouseOver="imgOver('f06')" onMouseOut="imgOut('f06')" class="hand" alt="중앙선"></td>
+					<td width="35"><img src="/bbs/editor/images/f07.gif" width="33" height="20" border="0" name="f07" onMouseOver="imgOver('f07')" onMouseOut="imgOut('f07')" class="hand" onClick="Div_Show('font_color')" alt="글자색"></td>
+					<td width="33"><img src="/bbs/editor/images/f08.gif" width="33" height="20" border="0" name="f08" onMouseOver="imgOver('f08')" onMouseOut="imgOut('f08')" class="hand" onClick="Div_Show('font_bg')" alt="하이라이트 컬러"></td>
+					<td width="10"><img src="/bbs/editor/images/bar.gif" width="2" height="18" border="0"></td>
+					<td width="25"><img src="/bbs/editor/images/f10.gif" width="23" height="20" border="0" name="f10" onClick="CommandExec('justifyleft',0);" onMouseOver="imgOver('f10')" onMouseOut="imgOut('f10')" class="hand" alt="좌측정렬"></td>
+					<td width="25"><img src="/bbs/editor/images/f11.gif" width="23" height="20" border="0" name="f11" onClick="CommandExec('justifycenter',0);" onMouseOver="imgOver('f11')" onMouseOut="imgOut('f11')" class="hand" alt="중앙정렬"></td>
+					<td width="25"><img src="/bbs/editor/images/f12.gif" width="23" height="20" border="0" name="f12" onClick="CommandExec('justifyright',0);" onMouseOver="imgOver('f12')" onMouseOut="imgOut('f12')" class="hand" alt="우측정렬"></td>
+					<td width="10"><img src="/bbs/editor/images/bar.gif" width="2" height="18" border="0"></td>
+<!--
+					<td width="88"><img src="/bbs/editor/images/f13.gif" width="88" height="20" border="0" name="f13" onmouseover="imgOver('f13')" onmouseout="imgOut('f13')" class="hand" onclick="Div_Show('emot')" alt="이모티콘"></td>
+					<td width="10"><img src="/bbs/editor/images/bar.gif" width="2" height="18" border="0"></td>
+-->
+					<td width="62"><img src="/bbs/editor/images/f14.gif" width="62" height="20" border="0" name="f14" onMouseOver="imgOver('f14')" onMouseOut="imgOut('f14')" class="hand" onClick="Div_Show('img')" alt="이미지삽입"></td>
+					<td width="10"><img src="/bbs/editor/images/bar.gif" width="2" height="18" border="0"></td>
+					<td width="59"><img src="/bbs/editor/images/f15.gif" width="59" height="20" border="0" name="f15" onMouseOver="imgOver('f15')" onMouseOut="imgOut('f15')" class="hand" onClick="Div_Show('link')" alt="링크삽입"></td>
+					<td width="3"></td>
+					<td width="68"><img src="/bbs/editor/images/f16on.gif" width="60" height="20" border="0" name="f16" onClick="Div_Skill()" class="hand"></td>
+				</tr>
+			</table>
+			<table border="0" cellpadding="0" cellspacing="0" height="0">
+				<tr>
+					<td><iframe id="font_face" frameborder="0" scrolling="no" style="position:absolute;display:none;margin-top:-3px;"></iframe></td>
+					<td><iframe id="font_size" frameborder="0" scrolling="no" style="position:absolute;display:none;margin-top:-3px;"></iframe></td>
+					<td><iframe id="emot" frameborder="0" scrolling="no" style="position:absolute;display:none;margin-top:-3px;"></iframe></td>
+					<td><iframe id="font_color" frameborder="0" scrolling="no" style="position:absolute;display:none;margin-top:-3px;"></iframe></td>
+					<td><iframe id="font_bg" frameborder="0" scrolling="no" style="position:absolute;display:none;margin-top:-3px;"></iframe></td>
+					<td><iframe id="img" frameborder="0" scrolling="no" style="position:absolute;display:none;margin-top:-3px;"></iframe></td>
+					<td><iframe id="link" frameborder="0" scrolling="no" style="position:absolute;display:none;margin-top:-3px;"></iframe></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</table>
+
+			<!-- 기본기능 -->
+
+			<!-- 고급기능 -->
+
+			<div id="div_skill2" style="display:none">
+				<table border="0" cellpadding="0" cellspacing="0" height="30">
+					<tr align="center">
+						<td width="4"></td>
+						<td width="26"><img src="/bbs/editor/images/f17.gif" width="24" height="20" border="0" name="f17" onClick="CommandExec('outdent',0);" onMouseOver="imgOver('f17')" onMouseOut="imgOut('f17')" class="hand" alt="내어쓰기"></td>
+						<td width="24"><img src="/bbs/editor/images/f18.gif" width="24" height="20" border="0" name="f18" onClick="CommandExec('indent',0);" onMouseOver="imgOver('f18')" onMouseOut="imgOut('f18')" class="hand" alt="들여쓰기"></td>
+						<td width="10"><img src="/bbs/editor/images/bar.gif" width="2" height="18" border="0"></td>
+						<td width="26"><img src="/bbs/editor/images/f19.gif" width="24" height="20" border="0" name="f19" onClick="CommandExec('insertorderedlist',0);" onMouseOver="imgOver('f19')" onMouseOut="imgOut('f19')" class="hand" alt="번호달기"></td>
+						<td width="24"><img src="/bbs/editor/images/f20.gif" width="24" height="20" border="0" name="f20" onClick="CommandExec('insertunorderedlist',0);" onMouseOver="imgOver('f20')" onMouseOut="imgOut('f20')" class="hand" alt="기호달기"></td>
+						<td width="10"><img src="/bbs/editor/images/bar.gif" width="2" height="18" border="0"></td>
+						<td width="46"><img src="/bbs/editor/images/f21.gif" width="46" height="20" border="0" name="f21" onClick="CommandExec('hr',0);" onMouseOver="imgOver('f21')" onMouseOut="imgOut('f21')" class="hand" alt="분리선"></td>
+						<td width="10"><img src="/bbs/editor/images/bar.gif" width="2" height="18" border="0"></td>
+						<td width="70"><img src="/bbs/editor/images/f09.gif" width="70" height="20" border="0" name="f09" onMouseOver="imgOver('f09')" onMouseOut="imgOut('f09')" class="hand" onClick="Div_Show('bg_color')" alt="배경색"></td>
+					</tr>
+				</table>
+			</div>
+			<table border="0" cellpadding="0" cellspacing="0" height="0">
+				<tr>
+					<td><iframe id="bg_color" frameborder="0" scrolling="no" style="position:absolute;display:none;margin-top:-3px;"></iframe></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</table>
+
+			<!-- 고급기능 --></td>
+	</tr>
+	<tr>
+		<td bgcolor="#FFFFFF"><div>
+				<script src="/common/js/flashjs.js"></script>
+				<div id="LetterUp">
+					<iframe id="rLetterUp" name="rLetterUp" width="100%" style="height:0" frameborder="0" scrolling="no"></iframe>
+				</div>
+				<div id="HtmlArea">
+					<iframe id="rHtmlArea" width="100%" height="350" frameborder="0" scrolling="yes"></iframe>
+				</div>
+				<div id="TextArea" style="display:none;word-break:break-all;">
+					<textarea id="rTextArea" style="width:100%;height:350px;border:0px;margin:0 0 0 0;background-color:#F3F3F3;"></textarea>
+				</div>
+				<div id="LetterDn"></div>
+				<div id="viewSign"></div>
+			</div></td>
+	</tr>
+</table>

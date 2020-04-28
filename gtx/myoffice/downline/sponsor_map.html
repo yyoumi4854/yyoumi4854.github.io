@@ -1,0 +1,30 @@
+<!-- #include virtual = "/myoffice/inc/head.html" -->
+
+<!-- #include virtual = "/myoffice/inc/header.html" -->
+
+<!-- #include virtual = "/myoffice/inc/nav.html" -->
+<%
+If request("type") = "P" Then
+	title = "Placement Map"
+Elseif request("type") = "R" Then
+	title = "Sponsor Map"
+End If
+%>
+<div id="container">
+	<div class="contentHeader">
+		<h3 class="contentTitle"><i class="fa fa-th-large" aria-hidden="true"></i> <%=title%></h3>
+	</div>
+	<div class="content">
+		<div class="section">
+			<div class="innerBox">
+				<!--------------------------------------------콘텐츠시작 -------------------------------------------------------->
+				<div class="contents" style="width:100%;margin:0 auto;" >
+					<iframe id="map_insert" name="map_insert" src="./bizmap/losmap.html?type=<%=request("type")%>" style="width:100%;height:690px;border:0;" scrolling="no"></iframe>
+				</div>
+				<!--------------------------------------------콘텐츠끝 -------------------------------------------------------->
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- #include virtual = "/myoffice/inc/footer.html" -->

@@ -1,0 +1,264 @@
+    <!-- header start -->
+    <div id="header">
+      <div class="container">
+        <h1 class="logo">
+          <a href="/">GTeXpress</a>
+        </h1>
+
+        <div class="gnb_btn"><a href="#"></a></div>
+
+		<div id="gnb">
+			<ul class="dep1">
+				<li>
+					<a href="#">ABOUT US</a>
+					<ul class="dep2">
+						<li><a href="/about/our_company.html">OUR COMPANY</a></li>
+						<li><a href="/about/brand.html">BRAND STORY</a></li>
+					</ul>
+				</li>
+
+				<li>
+					<a href="#">SKIN CARE</a>
+					<ul class="dep2">
+            <%
+            Dim menuCateCd(), menuCateName()
+            subConnect	= "Provider=OraOLEDB.Oracle;Data Source=" & Session("db_home") & ";User ID=" & Session("db_user") & ";Password=" & Session("db_pass") & ";Persist Security Info=True;PLSQLRset=1"
+            Set DBSubConn	= Server.CreateObject("ADODB.Connection")
+            DBSubConn.Open subConnect
+            Set rsMu = Server.CreateObject("ADODB.RecordSet")
+            rsMu.CursorType = 3
+            sql =       "select cate_cd1, cate_name from pdt_cate1  "
+            sql = sql & " where isuse = '1'                         "
+            sql = sql & "   and cate_cd1 not in ('0004', '0005', '0006', '9999') "
+            sql = sql & " order by view_order                       "
+            rsMu.Open sql, DBSubConn
+
+            nuCnt = rsMu.RecordCount
+
+            If nuCnt > 0 Then
+              ReDim menuCateCd(nuCnt), menuCateName(nuCnt)
+              For i = 1 To nuCnt
+                menuCateCd(i) = rsMu("cate_cd1")
+                menuCateName(i) = rsMu("cate_name")
+                rsMu.MoveNext
+              Next
+            End If
+            rsMu.Close  : Set rsMu = Nothing
+
+            For i = 1 To UBound(menuCateCd)
+              Response.Write "<li><a href=""/product/product_list.html?cate_cd1=" & menuCateCd(i) & """>" & menuCateName(i) & "</a></li>"
+            Next
+            %>
+					</ul>
+				</li>
+
+				<li>
+					<a href="/product/product_list_shield.html?cate_cd1=0006">GENESHIELD</a>
+					<!-- <ul class="dep2">
+						<li><a href="#">GENESHIELD</a></li>
+					</ul> -->
+				</li>
+				<li>
+					<a href="#">BOARD</a>
+					<ul class="dep2">
+						<li><a href="/board/notice.html">NOTICE</a></li>
+						<li><a href="/board/faq.html">FAQ</a></li>
+						<li><a href="/board/event.html">EVENT</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="/review/review.html">REVIEW</a>
+					<!-- <ul class="dep2">
+						<li><a href="/review/review.html">REVIEW</a></li>
+					</ul> -->
+				</li>
+				<li>
+        <% If Session("login_id") = "" Then %>
+          <a href="/member/join.html">JOIN NOW</a>
+        <% Else %>
+          <a href="/myoffice/">MY OFFICE</a>
+        <% End If %>
+        </li>
+			</ul>
+		</div>
+		<div class="menu2_bg"></div>
+
+        <div class="right_list">
+          <% If Session("login_id") = "" Then %>
+          <a href="/member/login.html"><img src="../img/common/icon_lock.png" alt=""><span>LOGIN</span></a>
+          <% Else %>
+          <a href="/myoffice/common/logout.html"><img src="../img/common/icon_unlock.png" alt=""><span>LOGOUT</span></a>
+          <% End If %>
+          <!-- <a href="#"><span>Google<br>Transglate</span></a> -->
+		  <!-- <div class="lang_select">
+			  <a href="#" class="eng">UNITED STATES</a>
+		  </div> -->
+			<div class="lang">
+				<a href="#">LANGUAGE</a>
+				<div class="lang_select">
+					<a href="#" class="eng">ENGLISH</a>
+				</div>
+			</div>
+
+          <a href="/shop/shoppingbag.html" class="shop_btn">
+            <span>
+              <span class="cart">
+                <%
+                Dim cntCart : cntCart = "0"
+                If Session("login_id") <> "" Then
+                  sql = "select count(0) as cntCart from web_cart where userid = '" & Session("userid") & "'  "
+                  Set rsCart = DBSubConn.Execute(sql)
+                  If Not rsCart.EOF Then
+                    cntCart = rsCart("cntCart")
+                  End If
+                  rsCart.Close  : Set rsCart = Nothing
+                End If
+                Set DBSubConn = Nothing
+                %>
+                <span class="count"><%=FormatNumber(cntCart, 0)%></span>
+              </span>
+            </span>
+          </a>
+        </div>
+      </div>
+      <div class="bg"></div>
+    </div>
+    <!-- header end -->
+
+    <!-- gnb_m start -->
+    <div id="gnb_m">
+      <ul class="dep1">
+          <li>
+            <a href="#">ABOUT US</a>
+			<ul class="dep2">
+				<li><a href="/about/our_company.html">OUR COMPANY</a></li>
+				<li><a href="/about/brand.html">BRAND STORY</a></li>
+			</ul>
+          </li>
+          <li>
+            <a href="#">SKIN CARE</a>
+            <ul class="dep2">
+              <li>
+                <a href="#">
+                  <span>NATURAL SOAP</span>
+                </a>
+              </li>
+			  <li>
+                <a href="/skincare/skincare.html">
+                  <span>SKIN CARE</span>
+                </a>
+              </li>
+			  <li>
+                <a href="#">
+                  <span>HAIR CARE</span>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="#">GENESHIELD</a>
+            <!-- <ul class="dep2">
+                <li>
+                  <a href="#">
+                    <span>GENESHIELD</span>
+                  </a>
+                </li>
+              </ul> -->
+          </li>
+          <li>
+            <a href="#">BOARD</a>
+              <ul class="dep2">
+                <li>
+                  <a href="/board/notice.html">
+                    <span>NOTICE</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/board/faq.html">
+                    <span>FAQ</span>
+                  </a>
+                </li>
+				<li>
+                  <a href="/board/event.html">
+                    <span>EVENT</span>
+                  </a>
+                </li>
+              </ul>
+          </li>
+          <li>
+            <a href="/review/review.html">REVIEW</a>
+            <!-- <ul class="dep2">
+              <li>
+                <a href="/review/review.html">
+                  <span>REVIEW</span>
+                </a>
+              </li>
+            </ul> -->
+          </li>
+          <li>
+            <% If Session("login_id") = "" Then %>
+            <a href="/member/join.html">JOIN NOW</a>
+            <% Else %>
+            <a href="/myoffice/">MY OFFICE</a>
+            <% End If %>
+          </li>
+        </ul>
+    </div>
+    <!-- gnb_m end -->
+
+    <script>
+    $(function(){
+      // header start
+      //메뉴 PC
+      // $("#gnb>ul>li").mouseover(function(){
+      //   $("#gnb>ul>li").removeClass("on");
+      //   $(this).addClass("on");
+      //   $(this).children(".sub").stop().slideDown();
+      // });
+	  //
+      // $(".sub").mouseleave(function(){
+      //   $(this).stop().slideUp();
+      // });
+	  //
+      // $("#gnb").mouseleave(function(){
+      //   $(".sub").stop().slideUp();
+      // });
+
+	  $("#gnb>ul>li").hover(function(){
+	  //마우스오버
+		$("#gnb>ul>li").removeClass("on");
+		$(this).addClass("on");
+	  	$(this).children().next(".dep2").stop().slideDown();
+	  },
+	  function(){
+	  //마우스리브
+	  	$(this).children().next(".dep2").stop().slideUp();
+		$(this).removeClass("on");
+	  });
+
+      // 메뉴 버튼
+      $(".gnb_btn").click(function(){
+        $(this).toggleClass("open");
+        if ($(this).hasClass("open")) {
+          $("gnb_btn").show();
+          $("#gnb_m").animate({"left":"0"},500);
+          //열기
+        }else {
+          $("gnb_btn").hide();
+          $("#gnb_m").animate({"left":"-50%"},300);
+          //닫기
+        }
+      });
+
+      //메뉴 모바일
+      $("#gnb_m>ul>li>a").click(function(){
+        $("#gnb_m>ul>li>.dep2").stop().slideUp();
+        $("#gnb_m>ul>li>a").removeClass("on");
+        if(!$(this).siblings(".dep2").is(":visible")){
+            $(this).siblings(".dep2").stop().slideDown();
+            $(this).addClass("on");
+        }
+      });
+      // header end
+    });
+    </script>

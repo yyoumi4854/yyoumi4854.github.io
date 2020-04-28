@@ -1,0 +1,263 @@
+<!-- #include virtual = /inc/head.html -->
+<!-- #include virtual = "/inc/header.html" -->
+<div class="shopping_bag shop">
+  <div class="inner">
+    <h2>SHOPPING BAG</h2>
+
+    <table class="item_list">
+      <tr class="tit">
+        <td class="check">
+          <input type="checkbox" name="chkAll" id="chkAll" value="all" onchange="fnChangeCheckbox('all');">
+          <label for="chkAll"></label>
+        </td>
+        <td>ITEM</td>
+        <td></td>
+        <td>PRICE</td>
+        <td>QTY</td>
+        <td>POINT</td>
+        <td>TOTAL PRICE</td>
+        <td></td>
+      </tr>
+      <tbody id="cart_items"></tbody>
+    </table>
+
+    <div class="con_bottom">
+      <div class="check_out">
+        <div class="top">
+          <p>
+            <span>SUB TOTAL</span>
+            <span id="buyAmt">$0.00</span>
+          </p>
+
+          <p>
+            <span>SHIPPING</span>
+            <span>$0.00</span>
+          </p>
+
+          <select class="" name="">
+            <option value="">Standard -FREE</option>
+          </select>
+        </div>
+        <div class="bottom">
+          <p>
+            <span>ESTIMATED TOTAL</span>
+            <span id="totBuyAmt">$0.00</span>
+          </p>
+          <a href="#" onclick="fnOrderCart();">CHECK OUT</a>
+        </div>
+      </div>
+      <div class="continue">
+        <a href="/product/product.html">CONTINUE SHOPPING</a>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- #include virtual = /inc/foot.html -->
+<script>
+  $(function(){
+    fnListJson(1);
+  });
+  function fnListJson( _pageNo, _kind){
+    var _pageSize	= 8;
+		var _perArea	= 5;
+    var _totalPages = 0;
+    var $tgList = $("#cart_items");
+    var url = "/myoffice/json_data/cart_list_json.html";
+		var data = {
+				page	 : _pageNo-1,
+				pageSize : _pageSize,
+				cate_cd1 : '<%=cate_cd1%>'
+      };
+
+    $tgList.loading('start');
+    $tgList.empty();
+    $(".empty").hide();
+
+    $.post(url, data, function(jsonData) {
+				if (typeof jsonData !== 'object') {
+					jsonData = JSON.parse(jsonData);
+				}
+				var addHtml = "";
+				var bbsList = jsonData.list;
+
+          // echoNull2Blank(value.thum_img)
+				$.each(bbsList, function(index, value){
+          addHtml += '<tr class="list">';
+          addHtml += '  <td class="check">';
+          addHtml += '    <input type="checkbox" name="product_cd" value="' + echoNull2Blank(value.prod_cd) + '" id="ch_' + echoNull2Blank(value.prod_cd) + '" onchange="fnChangeCheckbox();">';
+          addHtml += '    <label for="ch_' + echoNull2Blank(value.prod_cd) + '"></label>';
+          addHtml += '  </td>';
+          addHtml += '  <td class="pro_img">';
+          addHtml += '    <img src="' + echoNull2Blank(value.prod_img) + '" alt="">';
+          addHtml += '  </td>';
+          addHtml += '  <td class="txt">';
+          addHtml += '    <p>' + echoNull2Blank(value.prod_name) + '</p>';
+          if (value.prod_model) {
+          addHtml += '    <p>' + echoNull2Blank(value.prod_model) + '</p>';
+          }
+          addHtml += '  </td>';
+          addHtml += '  <td>' + numeral(value.prod_amt).format('$0,0.00') + '</td>';
+          addHtml += '  <td class="count">';
+          addHtml += '    <div class="count_wrap">';
+          addHtml += '      <button type="button" id="m_qty_' + value.prod_cd + '" class="minus" onclick="fnChangeQty(this);">-</button>';
+          addHtml += '      <input type="text" name="t_qty" id="qty_' + value.prod_cd + '" value="' + echoNull2Blank(value.prod_qty) + '" readonly="">';
+          addHtml += '      <button type="button" id="p_qty_' + value.prod_cd + '" class="pluse" onclick="fnChangeQty(this);">+</button>';
+          addHtml += '    </div>';
+          addHtml += '  </td>';
+          addHtml += '  <td>';
+          addHtml += '    <span class="txt_no">POINT :</span>';
+          addHtml += '    <span>' + numeral(value.prod_pv1).format('0,0') + '</span>';
+          addHtml += '  </td>';
+          addHtml += '  <td class="price">';
+          addHtml += '    <span class="txt_no">TOTAL PRICE :</span>';
+          var subTotAmt = 0;
+          subTotAmt = Number(value.prod_amt) * Number(value.prod_qty);
+          addHtml += '    <span>' + numeral(subTotAmt).format('$0,0.00') + '</span>';
+          addHtml += '  </td>';
+          addHtml += '  <td class="del"><button type="button" name="button" onclick="fnModifyCart(\'' + echoNull2Blank(value.prod_cd) + '\',\'DEL_P\')">delect</button></td>';
+          addHtml += '</tr>';
+				});
+
+				$tgList.html(addHtml);
+
+				if (_totalPages == 0) {
+					$(".empty").show();
+				}
+    }, 'json')
+		.fail(function (jqXHR, textStatus, errorThrown) {
+			alert('HTTP status code: ' + jqXHR.status + '\n' +
+				'textStatus: ' + textStatus + '\n' +
+				'errorThrown: ' + errorThrown);
+			alert('HTTP message body (jqXHR.responseText): ' + '\n' + jqXHR.responseText);
+    })
+    .always(function(){
+      $tgList.loading('stop');
+    });
+  }
+
+  function fnCalcCart(){
+    var buyAmt = 0;
+    var $target = $('input:checkbox[name=product_cd]');
+    $.each($target, function(index, value){
+      $this = $(this);
+      var $t_qty    = $this.closest('tr').find('input[name=t_qty]');
+      var $t_unit   = $this.closest('tr').find('td').eq(3);
+      var $t_unitTot= $this.closest('tr').find('.price').find('span').eq(1);
+      var unitTot = Number($t_qty.val()) * Number($t_unit.text().replace('$', ''));
+      $t_unitTot.text(numeral(unitTot).format('$0,0.00'));
+      buyAmt += ($this.is(':checked')) ? unitTot : 0
+    });
+    $('#buyAmt, #totBuyAmt').text(numeral(buyAmt).format('$0,0.00'));
+  }
+
+  function fnChangeCheckbox(_value) {
+    var $target = $('input:checkbox[name=product_cd]');
+    var chkAll = $('#chkAll').is(':checked');
+    if (_value == 'all') {
+      $.each($target, function(index, value){
+        if (chkAll) {
+          $(this).attr('checked', true);
+        } else {
+          $(this).removeAttr('checked');
+        }
+      });
+    }
+    fnCalcCart();
+  }
+
+  function fnModifyCart(product_cd, work_type) { // 장바구니에 담기
+    if ("<%=Session("login_id")%>" == "") {
+      alert("로그인이 필요한 서비스입니다.\n로그인 화면으로 이동합니다.");
+      frm.action = "/member/login.html";
+      frm.submit();
+      return false;
+    } else {
+      var qty = $("#qty_"+product_cd).val();
+
+      var url = "/myoffice/json_data/cart_insert_json.html";
+      var data = {
+          work_type	  : work_type,
+          product_cd	: product_cd,
+          qty			    : qty,
+          order_kind	: "4101"
+        };
+      $.post(url, data, function(jsonData) {
+        var items = jsonData.rtnResult;
+        if (items) {
+          var rtn_msg = items.rtn_msg.replace(/\\n/g, '\n')
+          if (items.rtn_state == "success"){
+            if (rtn_msg != "" && work_type != "DEL_P") {
+              alert(rtn_msg);
+            }
+            if (work_type == "DEL_P") {
+              $("#qty_"+product_cd).closest('tr').remove();
+            }
+            var rowCnt = $(".list").length;
+            if (rowCnt <= 0 || work_type == "DEL_A"){
+              location.reload();
+            }
+          } else {
+            alert(rtn_msg);
+            location.reload();
+          }
+          fnCalcCart();
+        }
+        return;
+      }, 'json')
+      .fail(function (jqXHR, textStatus, errorThrown) {
+        alert('HTTP status code: ' + jqXHR.status + '\n' +
+          'textStatus: ' + textStatus + '\n' +
+          'errorThrown: ' + errorThrown);
+        alert('HTTP message body (jqXHR.responseText): ' + '\n' + jqXHR.responseText);
+      });
+    }
+  }
+
+  function fnChangeQty(_this) {
+    var aKey = $(_this).attr("id");
+    var tmp_cd = aKey.replace("p_qty_", "").replace("m_qty_", "");
+    aKey = aKey.replace("_"+tmp_cd, "");
+    var t_qty = Number($("#qty_"+tmp_cd).val());
+
+    if (aKey == "p_qty"){
+      t_qty += 1;
+    } else {
+      t_qty -= 1;
+      if (t_qty < 1){
+        alert("수량은 최소 1보다 작을 수 없습니다.");
+        t_qty = 1;
+      }
+    }
+
+    $("#qty_"+tmp_cd).val(t_qty);
+    fnModifyCart(tmp_cd, "MOD");
+  }
+
+  function fnOrderCart(){
+    event.preventDefault();
+    var $form = $('<form></form>');
+    $form.attr('action', '/shop/checkout.html');
+    $form.attr('method', 'post');
+    $form.appendTo('body');
+
+    var cntItem = 0;
+    var $target = $('input:checkbox[name=product_cd]');
+    $.each($target, function(index, value){
+      $this = $(this);
+      if($this.is(":checked")) {
+        var $t_qty    = $this.closest('tr').find('input[name=t_qty]');
+        var product_cd= $('<input type="hidden" name="product_cd" value="' + value.value + '" />');
+        var qty       = $('<input type="hidden" name="qty" value="' + $t_qty.val() + '" />');
+        $form.append(product_cd).append(qty);
+        cntItem ++;
+      }
+    });
+
+    if (cntItem > 0 ) {
+      $form.submit();
+    } else {
+      alert('주문할 상품을 선택하세요.');
+      return false;
+    }
+  }
+</script>

@@ -1,0 +1,117 @@
+<%@ CodePage="65001" Language="vbscript"%>
+<!-- #include virtual = "/myoffice/common/common.inc" -->
+<% Call Check_Login("")%>
+<html>
+<head>
+	<meta charset=utf-8>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0, minimal-ui">
+
+	<script type="text/javascript" src="./jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="./jquery-ui-1.9.2.custom.min.js"></script>
+	<link rel="stylesheet" href="./style.css" />
+	<style>body {overflow:hidden;}</style>
+</head>
+
+<body style="overflow:auto;-webkit-overflow-scrolling:touch;background:#fff;">
+
+<div id="top_panel" style="width:100%;">
+	<%
+	t_id = session("login_id")
+	t_lv = 10
+	If Request("type") = "R" Then
+		t_map= "recomm"
+		t_lv = 10
+	Else
+		t_map= "parents"
+		t_lv = 10
+	End If
+
+	%>
+	<input type="hidden" id="init_id"	value="<%=t_id%>">
+	<input type="hidden" id="init_lv"	value="<%=t_lv%>">
+	<input type="hidden" id="init_map"	value="<%=t_map%>">
+	<input type="hidden" id="t_lv"		value="<%=t_lv%>">
+	<input type="hidden" id="map_type"	value="<%=t_map%>">
+
+	<div style="padding:10px;border-bottom:1px solid #ccc;">
+		<span style="display:inline-block;vertical-align:middle;">Current </span>
+		<input type="text" id="t_id" style="width:100px;background:#e8e8e8;border:1px solid #e9e9e9;text-align:center;" value="<%=t_id%>" readonly onfocus="this.blur();">
+		<button type="button" onClick="upline_search();" style="background:#8666b2;color:#fff;border:1px solid #8666b2;">Up</button>
+		<button type="button" onClick="reset();" style="background:#01A9DB;color:#fff;border:1px solid #01A9DB;">Reset</button>
+		<button type="button" onClick="set_map();" style="background:#313133;color:#fff;border:1px solid #313133;">View</button>
+	</div>
+</div>
+<%
+user_agent = Request.ServerVariables("HTTP_USER_AGENT")
+
+If (InStr(user_agent,"iPhone") > 0) Then
+	scroll = "auto"
+ElseIf (InStr(user_agent,"iPad") > 0) Then
+	scroll = "auto"
+ElseIf (InStr(user_agent,"Android") > 0) Then
+	scroll = "auto"
+Else
+	scroll = "hidden"
+End If
+scroll = "hidden"
+%>
+<!--
+<div style="width:100%; height:600px; overflow:<%=scroll%>; -webkit-overflow-scrolling:touch;">
+-->
+<div style="width:100%; height:600px; overflow:auto; -webkit-overflow-scrolling:touch;">
+	<!--
+	<iframe id="map_fr" name="map_fr" frameborder="no" style="width:100%; height:650px; border:0px solid #e0e0e0;"></iframe>
+	-->
+	<iframe id="map_fr" name="map_fr" frameborder="no" scrolling="auto" style="width:100%;height:600px; border:0px solid #e0e0e0;overflow:auto; -webkit-overflow-scrolling:touch;"></iframe>
+</div>
+
+</body>
+
+<script language="javascript">
+
+$(document).ready(function() {
+
+	var url = "./map_body.html";
+	url += "?t_map=" + $("#map_type").val();
+	url += "&t_lv=" + $("#t_lv").val();
+	url += "&t_id=" + $("#t_id").val();
+
+	document.getElementById("map_fr").src= url;
+});
+
+function set_map() {
+	var url = "./map_body.html";
+	url += "?t_map=" + $("#map_type").val();
+	url += "&t_lv=" + $("#t_lv").val();
+	url += "&t_id=" + $("#t_id").val();
+
+	document.getElementById("map_fr").src= url;
+}
+
+function reset() {
+	$("#t_id").val($("#init_id").val());
+	$("#t_lv").val($("#init_lv").val());
+	$("#map_type").val($("#init_map").val());
+}
+
+function upline_search() {
+
+	var url = "./upline_search.html";
+	url += "?t_id=" + $("#t_id").val();
+	url += "&t_map=" + $("#map_type").val();
+	url += "&init_id=" + $("#init_id").val();
+
+	$.ajax(url, {
+		success:function(data) {
+			if (data == "F") {
+//				alert('현재 최상위 회원입니다.');
+			} else {
+				$("#t_id").val(data);
+			}
+		}
+	});
+
+}
+</script>
+</html>

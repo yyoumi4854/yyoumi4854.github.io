@@ -1,0 +1,364 @@
+<!-- #include virtual = "/myoffice/common/db_connect.inc" -->
+<!-- #include virtual = /inc/head.html -->
+<!-- #include virtual = "/inc/header.html" -->
+<div class="join">
+  <div class="con">
+    <h2>JOIN NOW</h2>
+    <form name="reg_frm" id="reg_frm" method="post">
+      <input type="hidden" name="work_user" value="<%=session("userid")%>" />
+      <input type="hidden" name="user_kind" value="2101" />
+    <div class="join_top join_con">
+      <h3>Upline Information</h3>
+      <table>
+          <tr>
+            <th>Enroller ID</th>
+            <td>
+              <input type="text" name="recomm_in" id="recomm_in" placeholder="Enter Enroller ID"
+                      check="T" check_type="length" check_length="0" check_key=""
+                      title="You have to check your Enroller information."
+                      maxLength="30" value="<%=r_id%>" />
+              <button type="button" onclick="upline_chk('R');">CHECK</button>
+            </td>
+          </tr>
+          <tr>
+            <th>Enroller Name</th>
+            <td>
+              <span id="exp_recomm"></span>
+              <input type="hidden" name="recomm_id" id="recomm_id"  placeholder="Enter Enroller ID"
+                      check="T" check_type="length" check_length="0" check_key=""
+                      title="Please check your Enroller information.">
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              You cannot change your upline information (Enroller ID) after signup.<br>
+              Please be sure to check your correct upline information.
+            </td>
+          </tr>
+      </table>
+    </div>
+
+    <div class="join_bottom join_con">
+      <h3>New User Information</h3>
+      <table>
+          <tr>
+            <th>Country</th>
+            <td>
+              <select name="country" id="country"
+                      check="T" check_type="length" check_length="0" check_key=""
+                      title="Please select the country field.">
+                <option value="">Select Country</option>
+                <%
+                sql =		"select	country, initcap(country_name) as country_name	"
+                sql = sql & "  from	country					      "
+                sql = sql & " where	isUSE = '1'				    "
+                sql = sql & " order by country_name				"
+                Set rs_country = DBConn.Execute(sql)
+
+                Do While Not rs_country.Eof
+                  Response.Write "<option value='" & rs_country("country") & "'>" & rs_country("country_name") & "</option>"
+                  rs_country.MoveNext
+                Loop
+                rs_country.Close
+                %>
+              </select>
+            </td>
+          </tr>
+
+          <tr>
+            <th>Center</th>
+            <td>
+              <select name="center" id="center"
+                      check="T" check_type="length" check_length="0" check_key=""
+                      title="Please select the center field.">
+                <option value="">Select Center</option>
+                <%
+                sql =		"select	center_cd, center_name	"
+                sql = sql & "  from	center					    "
+                sql = sql & " where	isUSE = '1'				  "
+                sql = sql & " order by center_cd				"
+                Set rsCenter = DBConn.Execute(sql)
+
+                Do While Not rsCenter.Eof
+                  Response.Write "<option value='" & rsCenter("center_cd") & "'>" & rsCenter("center_name") & "</option>"
+                  rsCenter.MoveNext
+                Loop
+                rsCenter.Close
+                %>
+              </select>
+            </td>
+          </tr>
+
+          <tr>
+            <th>First Name</th>
+            <td>
+              <input type="text" name="firstname" id="firstname" placeholder="Enter First Name"
+							   check="T" check_type="length" check_length="0" check_key=""
+							   title="Please fill in the firstname field."
+							   value="<%=firstname%>" />
+            </td>
+          </tr>
+
+          <tr>
+            <th>Last Name</th>
+            <td>
+              <input type="text" name="lastname" id="lastname" placeholder="Enter Last Name"
+							   check="T" check_type="length" check_length="0" check_key=""
+							   title="Please fill in the lastname field."
+							   value="<%=lastname%>" />
+            </td>
+          </tr>
+
+          <tr>
+            <th>Login ID</th>
+            <td>
+              <input type="text" name="exp_id" id="exp_id" placeholder="Enter Login ID"
+                      check="T" check_type="length" check_length="0" check_key=""
+                      title="Please fill in the Login ID field."
+                      maxLength="12" />
+              <input	type="hidden" name="dupl_chk" id="dupl_chk"
+                      check="T" check_type="value" check_length="0" check_key="T"
+                      title="Please fill in the Login ID field." />
+              <button type="button" id="id_chk_btn" onclick="login_id_chk();">Check</button>
+							<button type="button" id="id_chk_reset" onclick="login_id_reset();" style="display:none;">Reset</button>
+            </td>
+          </tr>
+
+          <tr>
+            <th>Password</th>
+            <td>
+              <input type="password" name="passwd" id="passwd" placeholder="Enter Password"
+                    check="T" check_type="length" check_length="3" check_key=""
+                    title="Please fill in the password field more than 4 characters."
+                    maxLength="30" />
+            </td>
+          </tr>
+
+          <tr>
+            <th>Cornfirm Password</th>
+            <td>
+              <input type="password" name="passwd_re" id="passwd_re" placeholder="Enter Confirm Password"
+                    check="T" check_type="length" check_length="3" check_key=""
+                    title="Please check your password."
+                    maxLength="30" />
+            </td>
+          </tr>
+
+          <tr>
+            <th>Mobile Phone</th>
+            <td>
+              <input type="tel" name="mobile" id="mobile" placeholder="Enter Mobile Phone"
+                    check="T" check_type="length" check_length="0" check_key=""
+                    title="Please fill in the mobile phone field."
+                    maxLength="20" />
+            </td>
+          </tr>
+
+          <tr>
+            <th>Email</th>
+            <td>
+              <input type="text" name="email" id="email" placeholder="Enter E-Mail"
+                    check="T" check_type="length" check_length="0" check_key=""
+                    title="Please fill in the E-Mail field."
+                    maxLength="100">
+            </td>
+          </tr>
+
+      </table>
+    </div>
+    </form>
+  </div>
+  <button type="button" id="btnSend">SIGN UP</button>
+  <button type="button" onClick="location.href='/index.html';">CANCEL</button>
+</div>
+<!-- #include virtual = /inc/foot.html -->
+
+<!------ id check popup ---->
+<div class="find_pop" id="popup_check_id" style="display:none;max-width:360px;border-radius:0;padding:0px;">
+	<div class="pop_inner">
+		<h4 class="pop_small_title">ID CHECK</h4>
+		<div class="id_check_box">
+			Your ID <span id="spanId">(meme102392)</span> is available.
+		</div>
+    <div class="btn_zone">
+      <a href="#" rel="modal:close" onclick="fnConfirmLoginID(true);" class="pop_btn_submit btn_red">OK</a>
+      <a href="#" rel="modal:close" onclick="fnConfirmLoginID(false);" class="pop_btn_submit btn_white">CANCEL</a>
+    </div>
+	</div>
+	<a href="#" rel="modal:close" class="close"></a>
+</div>
+
+
+
+
+<script>
+$(document).ready(function() {
+	$('#exp_id').keyup(function() {
+		$(this).val( $(this).val().replace( /[ㄱ-ㅎ| |ㅏ-ㅣ|가-힣]/g, '' ) );
+	});
+});
+
+$("#btnSend").on("click", function(){
+	var proc_ok = "T";
+
+	if (!$("#reg_frm").validation()){
+		proc_ok = "F";
+		return false;
+	}
+
+	if(validateEmail($("#email").val()) != true){
+		alert("Please check your E-Mail.");
+		$("#email").focus();
+		return false
+	}
+
+	if ($("#passwd").val() != $("#passwd_re").val()) {
+		alert("Please check your password.");
+		$("#passwd_re").focus();
+		proc_ok = "F";
+		return false;
+	}
+
+	if (proc_ok == "T")	{
+		ajaxSendSignup();
+	}
+});
+
+function ajaxSendSignup(){
+	var url = "/myoffice/common/signup_proc.html";
+	var data = $("#reg_frm").serializeObject();
+
+	$.ajax({
+		url : url,
+		global :false,
+		contentType : "application/x-www-form-urlencoded; charset=euc-kr",
+		type : "POST",
+		data : data,
+		dataType: 'text',
+		crossDomain: true,
+		async:false,
+		success:function(rtnData){
+			var arrItem = rtnData.split("|");
+			var rtnState= arrItem[0];
+			var rtnMsg 	= arrItem[1].replace(/\\n/g, '\n');
+			var	rtnUrl 	= arrItem[2];
+
+			if (rtnState == "SUCCESS") {
+				alert(rtnMsg);
+				location.href = rtnUrl;
+			} else {
+				alert(rtnMsg);
+			}
+		},
+		error:function(reponse,textStatus,errorThrown){
+			alert("Sorry!!! Some errors are occurred.\n\nPlease try again later.\n\nThank you.");
+		},
+		beforeSend:function(){
+		}
+	});
+}
+
+function login_id_chk() {
+	var $exp_id			= $("#exp_id");
+
+	if ($("#exp_id").val().length < 4) {
+		alert("LOGIN ID have to be more than 4 characters");
+		$("#exp_id").focus();
+	} else {
+		var ajax_url = "/myoffice/common/duplication_chk.html?check_val=" + $exp_id.val();
+		$.ajax(ajax_url, {
+			success:function(data) {
+
+				arrResult = data.split("|");
+
+				if (arrResult[0] == "SUCCESS") {
+          $('#spanId').text('('+ $exp_id.val() +')');
+          $("#popup_check_id").modal({showClose: false},"show");
+					return true;
+				} else {
+					alert(arrResult[1].replace(/\\n/g, '\n'));
+					fnConfirmLoginID(false);
+					return false;
+				}
+			}
+		});
+	}
+}
+
+function fnConfirmLoginID(_bool){
+  var $id_chk_btn		= $("#id_chk_btn");
+	var $id_chk_reset	= $("#id_chk_reset");
+	var $exp_id			= $("#exp_id");
+	var $dupl_chk		= $("#dupl_chk");
+
+  if(_bool) {
+    $id_chk_btn.hide();
+    $id_chk_reset.show();
+    $exp_id.attr("readonly", true);
+    $dupl_chk.val("T");
+  } else {
+    $id_chk_btn.show();
+    $id_chk_reset.hide();
+    $exp_id.removeAttr("readonly");
+    $dupl_chk.val("");
+    $exp_id.val("");
+  }
+}
+
+function login_id_reset() {
+
+	var $id_chk_btn		= $("#id_chk_btn");
+	var $id_chk_reset	= $("#id_chk_reset");
+	var $exp_id			= $("#exp_id");
+	var $dupl_chk		= $("#dupl_chk");
+
+	$id_chk_btn.show();
+	$id_chk_reset.hide();
+	$exp_id.removeAttr("readonly");
+	$exp_id.focus();
+	$dupl_chk.val("");
+}
+
+function upline_chk(fKIND) {
+	if (fKIND == "P") {
+		var check_val = $("#parents_in").val();
+	} else if (fKIND == "R") {
+		var check_val = $("#recomm_in").val();
+	}
+
+	if (check_val == "") {
+		alert("You have to input exact your sponsor information.");
+		if		(fKIND == "P") {$("#parents_in").focus();}
+		else if (fKIND == "R") {$("#recomm_in").focus(); }
+	} else {
+		var ajax_url = "/myoffice/common/sponsor_chk.html?check_kind=" + fKIND + "&check_val=" + check_val;
+
+		$.ajax(ajax_url, {
+			success:function(data) {
+
+				arrResult = data.split("|");
+
+				if (arrResult[0] == "SUCCESS") {
+//					alert(arrResult[1].replace(/\\n/g, '\n'));
+					if (fKIND == "R"){
+						objName = "recomm";
+					} else if (fKIND == "P") {
+						objName = "parents";
+					}
+					$("#" + objName + "_id").val(arrResult[2]);
+					$("#exp_" + objName).text(arrResult[3]).css("color", "");
+				} else {
+					if (fKIND == "R"){
+						objName = "recomm";
+					} else if (fKIND == "P") {
+						objName = "parents";
+					}
+					$("#exp_" + objName).text(arrResult[1]).css("color", "red");
+					return;
+				}
+			}
+		});
+	}
+
+}
+</script>

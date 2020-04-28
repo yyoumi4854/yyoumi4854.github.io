@@ -1,0 +1,24 @@
+<%@ CodePage="65001" Language="vbscript"%>
+<!--#include virtual="/myoffice/common/db_connect.inc"-->
+<%
+Session.CodePage = "65001" : Response.CharSet = "utf-8"
+
+On Error Resume Next
+
+sql =		"select	NVL(sum(decode(money_kind,'7101',tot_amt,0)),0) as amt_GTXp			"
+sql = sql & "  from	cyber_wallet														"
+sql = sql & " where	userid = '" & session("userid") & "'								"
+sql = sql & "   and	isUSE = '1'															"
+sql = sql & "   and	avail_date <= to_char(sysdate,'yyyy-mm-dd')							"
+Set rs = DBConn.Execute(sql)
+
+If Not rs.Eof Then
+	tot_GTXp		= rs("amt_GTXp")
+Else
+	tot_GTXp		= "0"
+End If
+
+rs.Close
+
+Response.Write tot_GTXp
+%>

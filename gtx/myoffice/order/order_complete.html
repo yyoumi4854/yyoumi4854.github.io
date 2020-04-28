@@ -1,0 +1,239 @@
+<%@ CodePage="65001" Language="vbscript"%>
+<!-- #include virtual = "/myoffice/common/common.inc" -->
+
+<!-- #include virtual = "/myoffice/inc/head.html" -->
+
+<!-- #include virtual = "/myoffice/inc/header.html" -->
+
+<!-- #include virtual = "/myoffice/inc/nav.html" -->
+<%
+Call Check_Login(fURL)
+order_no = Request("order_no")
+%>
+<div id="container">
+	<div class="contentHeader">
+		<h3 class="contentTitle"><i class="fa fa-th-large" aria-hidden="true"></i> Order Rquest Completed</h3>
+	</div>
+	<div class="content">
+		<div class="section">
+			<div class="innerBox" style="padding:7px;">
+				<div class="orderBox">
+					<!--
+					<div class="orderInnerBox">
+						<div class="detailBox">
+							<div class="productDetail">
+								<p class="productTitle">Brand Name</p>
+								<p class="productText">Acute angle</p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Model Name</p>
+								<p class="productText">ACUTE ANGLE PC</p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Model Number</p>
+								<p class="productText">AA-B4</p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Processor Brand</p>
+								<p class="productText">Intel</p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Processor Model</p>
+								<p class="productText">Apollo N3450</p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Processor Main Frequency</p>
+								<p class="productText">2.2 GHz</p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Material</p>
+								<p class="productText">Walnut + Magaluma</p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Graphics Card Type</p>
+								<p class="productText">Integrated Card</p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Memory Capacity</p>
+								<p class="productText">8GB</p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Use</p>
+								<p class="productText">Commercial</p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Hard Drive Capacity</p>
+								<p class="productText">64GB</p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Type</p>
+								<p class="productText">Mini Desktops</p>
+							</div>
+						</div>
+					</div>
+					-->
+					<div class="orderInnerBox">
+						<div class="detailBox">
+							<%
+							sql =		"select a.*, b.country_name							"
+							sql = sql & "  from vorder_head a, country b					"
+							sql = sql & " where a.d_country = b.country(+)					"
+							sql = sql & "   and a.userid   = '" & Session("userid") & "'	"
+							sql = sql & "   and a.order_no = '" & order_no & "'				"
+							'Response.write sql
+							Set rs = DBConn.Execute(sql)
+
+							name			= rs("d_name")
+							If InStr(name, ",") > 0 Then
+								arryName	= Split(name, ",")
+								lastname	= arryName(0)
+								firstname	= arryName(1)
+							Else
+								firstname	= name
+							End If
+
+							country			= rs("country_name")
+							city_state		= rs("d_address1")
+							street_addr		= rs("d_address2")
+							zipcode			= rs("d_zipcode")
+							mobile			= rs("d_mobile")
+							email			= rs("d_email")
+							%>
+							<div class="productDetail">
+								<p class="productTitle">Country</p>
+								<p class="productText"><%=country%></p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">First Name</p>
+								<p class="productText"><%=firstname%></p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Last Name</p>
+								<p class="productText"><%=lastname%></p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Street address</p>
+								<p class="productText"><%=street_addr%></p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">City / State</p>
+								<p class="productText"><%=city_state%></p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">ZIP code</p>
+								<p class="productText"><%=zipcode%></p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Mobile Phone</p>
+								<p class="productText"><%=mobile%></p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">E-Mail</p>
+								<p class="productText"><%=email%></p>
+							</div>
+						</div>
+					</div>
+					<%
+					sql =		"select amt, qty						"
+					sql = sql & "  from order_detail					"
+					sql = sql & " where order_no = '" & order_no & "'	"
+					Set od_rs = DBConn.Execute(sql)
+					If Not od_rs.EOF Then
+						od_amt		= od_rs("amt")
+						od_qty		= od_rs("qty")
+						od_tot_amt	= CCur(od_amt) * CCur(od_qty)
+					End If
+					od_rs.Close	: Set od_rs = Nothing
+					%>
+					<div class="orderInnerBox">
+						<div class="detailBox">
+							<div class="productDetail">
+								<p class="productTitle">Price</p>
+								<p class="productText">$ <%=FormatNumber(od_amt,2)%></p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Quantity</p>
+								<p class="productText"><%=FormatNumber(od_qty,0)%></p>
+							</div>
+							<div class="productDetail">
+								<p class="productTitle">Total Price</p>
+								<p class="productText"><%=FormatNumber(od_tot_amt,2)%> USD</p>
+							</div>
+							<%
+							sql =		"select pay_kind, pay_amt				"
+							sql = sql & "  from order_pay						"
+							sql = sql & " where order_no = '" & order_no & "'	"
+							Set od_rs = DBConn.Execute(sql)
+							If Not od_rs.EOF Then
+								pay_kind	= od_rs("pay_kind")
+								If (pay_kind = "CYBER") Then
+									pay_amt	= FormatNumber(od_rs("pay_amt"),0)
+									pay_doc	= "GTXp"
+								Else
+									pay_amt	= FormatNumber(od_rs("pay_amt"),2)
+									pay_doc	= "USD"
+								End If
+							End If
+							od_rs.Close	: Set od_rs = Nothing
+							%>
+							<div class="productDetail">
+								<p class="productTitle"><%=pay_kind%></p>
+								<p class="productText"><%=pay_amt & " " & pay_doc%></p>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<div class="section">
+			<div class="innerBox">
+				<div class="btnOrderComBox">
+					<a href="/myoffice/order/order_history.html" class="btnOrderCom">OK</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- #include virtual = "/myoffice/inc/footer.html" -->
+
+<div id="purchasePopup" style="display:none;">
+	<h1 class="purchasePopupTitle">Bank account number</h1>
+	<div class="purchasePopupContent">
+		<div class="addressContentBox">
+			<dl class="addressContentInner">
+				<dt class="bankAccount">Bank Direct Deposit</dt>
+				<dd class="addressNotice">To deposit the payment for your order, please copy the address below.</dd>
+				<dd class="bankAddr">
+					<div>
+						<%
+						sql = "select ab_account, ab_name, ab_depositor from admit_bank Where isuse = '1' and ab_cd = 2"
+						Set rs_ab = DBConn.Execute(sql)
+						If Not rs_ab.EOF Then
+							ab_account 	= rs_ab("ab_account")
+							ab_name 	= rs_ab("ab_name")
+							ab_depositor= rs_ab("ab_depositor")
+						End If
+						%>
+						<span class="bankAddrText"><%=ab_account%></span>
+						<button type="button" class="btnBankAddrCopy" data-clipboard-action="copy" data-clipboard-text="<%=ab_account%>">Copy</button>
+						<span class="bankAddrText"><%=" / " & ab_name & " / " & ab_depositor%></span>
+					</div>
+				</dd>
+			</dl>
+		</div>
+		<div class="addressContentBox">
+			<div class="btnPopupBox">
+				<a href="/myoffice/order/order.html" class="btnPopupOkay">OK</a>
+				<a href="#purchasePopup" rel="modal:close" class="btnPopupCancel">Cancel</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$(".btnPurchase").on("click", function(){
+		$("#purchasePopup").modal("show");
+	});
+</script>

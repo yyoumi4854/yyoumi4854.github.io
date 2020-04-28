@@ -1,0 +1,129 @@
+<%@ CodePage="65001" Language="vbscript"%>
+<!-- #include virtual = "/myoffice/common/common.inc" -->
+<%
+t_login_id	= Request("t_id")
+t_lv		= Request("t_lv")
+t_map		= Request("t_map")
+
+sql = "select userid from dist where login_id = '" & t_login_id & "' "
+Set rs_id = DBConn.Execute(sql)
+	t_id = rs_id("userid")
+rs_id.Close
+
+If t_map = "parents" Then
+	sql =		"SELECT	X.Userid, X.login_id, X.Username, X.Lv,X.parents_id, X.parents_name, X.recomm_id, X.recomm_name,	"
+	sql = sql & "		X.rank_cd, X.Rank_Name, X.seceder_date, X.isclass, X.Center_CD, X.Center_Name,						"
+	sql = sql & "		DECODE(X.isClass,'1',X.reg_date,X.seceder_Date) AS Reg_Date,  C.Code_Name AS UserKind,				"
+	sql = sql & "		r.us_rank_name AS Rank_Color, R.Rank_Initial As Rank_NM, R.Rank_name as R_Name,						"
+	sql = sql & "		D.Country_name, D.Flag_img																			"
+	sql = sql & "  FROM	Dist X, Rank R,																						"
+	sql = sql & "		(SELECT	Level as lvs, Userid																		"
+	sql = sql & "		   FROM	Dist																						"
+	sql = sql & "		  WHERE	LEVEL <= " & t_lv & "																		"
+	sql = sql & "		  START WITH userid = '" & t_id & "'																"
+	sql = sql & "		  CONNECT BY parents_id = prior userid																"
+	sql = sql & "		) B, Basic_Code C, country D																		"
+	sql = sql & " WHERE	X.Userid  = B.Userid																				"
+	sql = sql & "   AND	X.Rank_CD = R.Rank_CD(+)																			"
+	sql = sql & "   AND	X.User_Kind = C.Code(+)																				"
+	sql = sql & "   AND	X.country = D.country																				"
+
+Else
+
+	sql = "select	LV_R as base_LV from dist where userid = '" & t_id & "'	"
+	Set rs_lv = DBConn.Execute(sql)
+		base_lv = CInt(rs_lv("base_lv")) + t_lv
+	rs_lv.Close
+
+	sql =		"SELECT	X.Userid, X.login_id, X.Username, X.parents_id, X.parents_name, X.recomm_id, X.recomm_name,			"
+	sql = sql & "		X.rank_cd, X.Rank_Name, X.seceder_date, X.isclass, X.Center_CD, X.Center_Name,						"
+	sql = sql & "		DECODE(X.isClass,'1',X.reg_date,X.seceder_Date) AS Reg_Date, C.Code_Name AS UserKind,				"
+	sql = sql & "		r.us_rank_name AS Rank_Color, R.Rank_Initial As Rank_NM, R.Rank_name as R_Name,						"
+	sql = sql & "		X.Lv_R as LV, D.Country_name, D.Flag_img															"
+	sql = sql & "  FROM	Dist X, Rank R,																						"
+	sql = sql & "  		(SELECT Level as lvs, Userid																		"
+	sql = sql & "		   FROM Dist																						"
+	sql = sql & "		  WHERE Lv_R <= " & base_lv & "																		"
+	sql = sql & "		  START WITH userid = '" & t_id & "'																"
+	sql = sql & "		  CONNECT BY recomm_id = prior userid ) B,															"
+	sql = sql & "		Basic_Code C, country D																				"
+	sql = sql & " WHERE	X.Userid = B.Userid																					"
+	sql = sql & "   AND	X.Rank_CD = R.Rank_CD(+)																			"
+	sql = sql & "   AND	X.User_Kind = C.Code(+)																				"
+	sql = sql & "   AND X.country = D.country																				"
+	sql = sql & " ORDER BY LV, POS_R																						"
+End If
+'Response.write sql
+Set rs = DBConn.Execute(sql)
+
+cnt = 1	: lv_temp = CInt(rs("lv"))
+json = "{""dataList"":["
+
+Do While Not rs.Eof
+
+	isClass = rs("isClass")
+	Select Case isClass
+	Case "1"
+		idColor	= "background:#ffc184;color:#000;"
+		prefix	= ""
+	Case "0"
+		idColor = "background:#e0e0e0;color:#797979;"
+		prefix	= "(X)"
+	End Select
+
+	userid	= rs("userid")
+	login_id= rs("login_id")
+	username= rs("username")
+	If InStr(username, ",") > 0 Then
+		username = Split(username, ",")(0)
+	Else
+		username = username
+	End If
+	If Len(username) > 20 Then username = Left(username,20) & ".."
+
+	rank_color	= rs("rank_color")
+	rank		= rs("R_Name")			: rank = "<font color=" & rank_color & ">" & Left(rank,5) & "</font>"
+
+	reg_date= rs("reg_date")
+
+	center_name = rs("country_name")
+	flag		= rs("flag_img")
+
+	If t_map = "parents" Then
+		parent	= rs("parents_id")
+	Else
+		parent	= rs("recomm_id")
+	End If
+
+	If cnt = 1 Then parent = "org"
+
+	cur_lv	= CInt(rs("lv"))
+	lv_temp = cur_lv
+
+	json = json & "{"
+	json = json & """cnt"":"""		& cnt		& ""","
+	json = json & """level"":"""	& cur_lv	& ""","
+	json = json & """userid"":"""	& userid	& ""","
+	json = json & """username"":"""	& username	& ""","
+	json = json & """login_id"":"""	& login_id	& ""","
+	json = json & """parent"":"""	& parent	& ""","
+	json = json & """rank"":"""		& rank		& ""","
+	json = json & """reg_date"":"""	& reg_date	& ""","
+	json = json & """idColor"":"""	& idColor	& ""","
+	json = json & """prefix"":"""	& prefix	& ""","
+	json = json & """center_name"":"""	& center_name	& ""","
+	json = json & """flag"":"""		& flag		& """"
+	json = json & "},"
+
+'	Response.Write cnt & ":" & cur_lv & ":" & userid & ":" & parent &  "<br>"
+
+	cnt = cnt + 1
+	rs.MoveNext
+Loop
+rs.Close
+
+json = Left(json, Len(json)-1)
+json = json & "]}"
+
+Response.Write json
+%>

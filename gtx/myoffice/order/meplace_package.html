@@ -1,0 +1,132 @@
+<%@ CodePage="65001" Language="vbscript"%>
+<!-- #include virtual = "/myoffice/common/common.inc" -->
+
+<!-- #include virtual = "/myoffice/inc/head.html" -->
+
+<!-- #include virtual = "/myoffice/inc/header.html" -->
+
+<!-- #include virtual = "/myoffice/inc/nav.html" -->
+<% Call Check_Login(fURL) %>
+<div id="container">
+	<div class="contentHeader">
+		<h3 class="contentTitle"><i class="fa fa-th-large" aria-hidden="true"></i> Order</h3>
+	</div>
+	<div class="content">
+		<div class="section mecolor">
+			<!---------- Meplace packages select ------------>
+			<h3 class="meplace_title">MePlace Package</h3>
+			<div class="package_select_box">
+				<ul class="package_list">
+					<%
+					sql = "select	product_cd, product_name from product where cate_cd1 = '0004' and isuse = '1' order by product_cd "
+					Set rs = DBConn.Execute(sql)
+
+					Do While Not rs.EOF
+						product_cd = rs("product_cd")
+						product_name = rs("product_name")
+						Response.Write "<li id=""" & product_cd & """>"
+						Response.Write "	<dl class=""meplace_package"">"
+						Response.Write "		<dd><img src=""/myoffice/img/meplace/meplace_package_icon_" & LCase(product_name) & ".png"" alt=""" & product_name & """></dd>"
+						Response.Write "		<dt>"
+						Response.Write "			<span class=""b_short_bar""></span>"
+						Response.Write "			<span class=""package_name"">" & product_name & "</span>"
+						Response.Write "		</dt>"
+						Response.Write "	</dl>"
+						Response.Write "</li>"
+						rs.MoveNext
+					Loop
+					rs.Close	: Set rs = Nothing
+					%>
+					<!--
+					<li class="checkon">
+						<dl class="meplace_package">
+							<dd><img src="/myoffice/img/meplace/meplace_package_icon_basic.png" alt="basic"></dd>
+							<dt>
+								<span class="b_short_bar"></span>
+								<span class="package_name">Basic</span>
+							</dt>
+						</dl>
+					</li>
+					<li>
+						<dl class="meplace_package">
+							<dd><img src="/myoffice/img/meplace/meplace_package_icon_basic.png" alt="basic"></dd>
+							<dt>
+								<span class="b_short_bar"></span>
+								<span class="package_name">Basic</span>
+							</dt>
+						</dl>
+					</li>
+					<li>
+						<dl class="meplace_package">
+							<dd><img src="/myoffice/img/meplace/meplace_package_icon_basic.png" alt="basic"></dd>
+							<dt>
+								<span class="b_short_bar"></span>
+								<span class="package_name">Basic</span>
+							</dt>
+						</dl>
+					</li>
+					<li>
+						<dl class="meplace_package">
+							<dd><img src="/myoffice/img/meplace/meplace_package_icon_basic.png" alt="basic"></dd>
+							<dt>
+								<span class="b_short_bar"></span>
+								<span class="package_name">Basic</span>
+							</dt>
+						</dl>
+					</li>
+					<li>
+						<dl class="meplace_package">
+							<dd><img src="/myoffice/img/meplace/meplace_package_icon_basic.png" alt="basic"></dd>
+							<dt>
+								<span class="b_short_bar"></span>
+								<span class="package_name">Basic</span>
+							</dt>
+						</dl>
+					</li>
+					<li>
+						<dl class="meplace_package">
+							<dd><img src="/myoffice/img/meplace/meplace_package_icon_basic.png" alt="basic"></dd>
+							<dt>
+								<span class="b_short_bar"></span>
+								<span class="package_name">Basic</span>
+							</dt>
+						</dl>
+					</li>
+					-->
+				</ul>
+				<form id="form1" method="post" action="./order_package.html">
+					<input type="hidden" id="product_cd" name="product_cd" value="" />
+				</form>
+				<a href="#" class="btn_payment" onclick="fnSetProduct();">Procced to Payment</a>
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- #include virtual = "/myoffice/inc/footer.html" -->
+<script>
+$(function(){
+	$(".package_list > li").on("click",function(){
+		var thisId = $(this).attr("id");
+		$(".package_list > li").each(function(){
+			if (thisId == $(this).attr("id")){
+				$(this).addClass("checkon");
+				$("#product_cd").val(thisId);
+			}else{
+				$(this).removeClass("checkon");
+			}
+		});
+		console.log($("#product_cd").val());
+	});
+});
+
+function fnSetProduct(){
+	var product_cd = $("#product_cd").val();
+	if (!product_cd){
+		alert("Please choice of the MePlace Package.");
+		return false;
+	} else {
+		location.href = "./order_package.html?product_cd=" + product_cd;
+	}
+}
+</script>

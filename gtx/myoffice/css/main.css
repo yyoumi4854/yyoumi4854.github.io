@@ -1,0 +1,104 @@
+/* main.css*/
+.main_wrap_box {margin: 40px auto 20px;width:100%;max-width:1570px;}
+.main_dashboard {}
+.main_dashboard:after {clear:both;display:block;content:'';height:0;visibility:hidden;}
+.main_dashboard li {width:33.333%;float:left;}
+.dash_box {padding:0 0 0 0;width:100%;position:relative;}
+.dash_box .dash_title {padding:10px 0 10px;font-size:18px;position:relative;}
+.dash_box .dash_title::before {display:block;position:absolute;top:0;left:0;width:18px;height:2px;content:'';background:#ed1c24;}
+.dash_box .news_list {padding:0 0 0 0;}
+.dash_box .news_list>li {float:none;margin:3px 0;padding:15px 20px;width:100%;border:1px solid #d7d7d7;background:#fff;border-radius:5px;}
+.dash_box .news_list>li:hover {border:1px solid #3c5bb4;}
+.dash_box .news_list>li .date {display:block;font-size:13px;color:#9c9c9c;}
+.dash_box .news_list>li .subject {display:block;font-size:15px;color:#000;padding:5px 0;}
+.dash_box .news_list>li:hover .subject a {color:#3c5bb4;}
+.dash_box .news_more {display:block;position:absolute;top:6px;right:0;padding:6px 12px 6px 3px;font-size:14px;font-weight:500;background:url(/myoffice/img/main/icon_more.png) right center no-repeat;}
+
+.myinfo_box {padding:70px 20px;border:1px solid #d7d7d7;background:#fff;border-radius:5px;}
+.myinfo_box .info_list {width:100%;display:table;padding:12px 0;}
+.myinfo_box .info_list:after {clear:both;display:block;content:'';height:0;visibility:hidden;}
+.myinfo_box .info_list dt {display:table-cell;width:30%;padding:10px 10px;background:#333;color:#fff;border-radius:20px 0 0 20px;font-size:15px;}
+.myinfo_box .info_list dd {display:table-cell;width:70%;padding:10px 10px;background:#fff;border:1px solid #d7d7d7;font-size:14px;font-weight:500;text-align:right;}
+
+.padd_bo {padding:0;}
+.padd_l {padding:0 0 0 30px;}
+
+.purchase_status_box {padding:60px 20px;border:1px solid #d7d7d7;background:#fff;border-radius:5px;}
+.status_tb {border:1px solid #e1e1e1;width:100%;}
+.status_tb th {width:35%;padding:25px 15px;background:#f1f7fb;font-size:14px;font-weight:500;border-bottom:1px solid #e1e1e1;}
+.status_tb td {width:65%;padding:25px 15px;background:#fff;font-size:14px;border-bottom:1px solid #e1e1e1;text-align:center;}
+.status_tb td .btn_upgrade {display:inline-block;margin:0 0 0 5px;padding:4px 16px 4px 6px;background:url(/myoffice/img/main/arrow_up.png) 99% center #ed1c24 no-repeat;color:#fff;font-size:13px;}
+
+.main_dashboard_bot {padding:30px 0 15px;}
+.main_dashboard_bot:after {clear:both;display:block;content:'';height:0;visibility:hidden;}
+.main_dashboard_bot li {width:25%;float:left;}
+.status_box {padding:0 0 0 0;width:100%;border:1px solid #d7d7d7;}
+.status_box .status_title {padding:20px 10px;background:#f5f5f5;font-size:18px;border-bottom:1px solid #ed1c24;text-align:center;}
+.status_box .st_inner_box {height:213px;}
+.status_box .total_sale_amount {padding:20px 20px;background:#fff;text-align:center;font-size:24px;font-weight:bold;}
+.status_box .total_sale_my {padding:15px 15px;background:#eff1fb;}
+.total_sale_list {margin:0 auto;width:98%;max-width:280px;}
+.total_sale_list::after {clear:both;display:block;content:'';height:0;visibility:hidden;}
+.total_sale_list >li {float:left;width:50%;padding:0 10px;}
+.total_sale_list >li .circle_t {margin:0 auto;width:72px;height:72px;border-radius:36px;color:#fff;text-align:center;background:#20409a;font-size:16px;font-weight:500;}
+.total_sale_list >li .my_sum {padding:5px;text-align:center;font-size:16px;font-weight:500;}
+.total_sale_list >li .line_v1 {line-height:70px;}
+.total_sale_list >li .line_v2 {line-height:18px;padding-top:18px;}
+
+.status_box .padd_w {padding:48px 20px;overflow:hidden;background:#fff;}
+.position_list {margin:0 auto;padding:5px 5px;width:98%;max-width:318px;}
+.position_list>li {padding:5px 0;width:98%;}
+.position_list>li::after {clear:both;display:block;content:'';height:0;visibility:hidden;}
+.position_list>li span {display:block;}
+.position_list>li .icon_po {float:left;width:46px;}
+.position_list>li .position_dt {float:left;width:38%;padding:10px 10px 5px 7px;font-size:16px;font-weight:500;white-space:nowrap;}
+.position_list>li .position_dd {float:left;width:46%;height:40px;padding:10px 5px 5px 15px;border-bottom:2px solid #777;font-size:15px;}
+
+.member_list {margin:0 auto;padding:5px 5px;width:98%;max-width:180px;}
+.member_list::after {clear:both;display:block;content:'';height:0;visibility:hidden;}
+.member_list .member_dt {float:left;width:60%;max-width:94px;height:94px;}
+.member_list .member_dd {float:right;width:40%;padding:15px 10px;}
+.member_list .member_dd .member_num {font-size:36px;font-weight:bold;text-align:center;}
+.member_list .member_dd .members {font-size:12px;color:#999;text-align:center;}
+
+.balance_list {margin:0 auto;padding:5px 5px;width:98%;max-width:250px;}
+.balance_list::after {clear:both;display:block;content:'';height:0;visibility:hidden;}
+.balance_list .balance_dt {float:left;width:40%;max-width:94px;height:94px;}
+.balance_list .balance_dd {float:right;width:60%;padding:15px 10px;font-size:30px;font-weight:bold;text-align:center;white-space:nowrap;}
+
+
+
+
+
+
+@media only screen and (max-width: 1240px) {
+
+.main_wrap_box {margin: 20px auto 20px;}
+
+.main_dashboard li {width:50%;float:left;}
+.main_dashboard li:first-child {width:100%;float:left;}
+.main_dashboard li:first-child .dash_box .news_list>li {float:none;margin:3px 0;padding:15px 20px;width:100%;border:1px solid #d7d7d7;background:#fff;border-radius:5px;}
+
+.padd_bo {padding:10px;}
+.padd_l {padding:10px 10px 10px 10px;}
+
+.main_dashboard_bot {padding:15px 0 15px;}
+.main_dashboard_bot li:first-child {padding:10px 10px 10px 10px;}
+.main_dashboard_bot li {width:50%;float:left;}
+.main_dashboard_bot li:first-child .total_sale_list >li {float:left;width:50%;padding:0 10px;}
+.main_dashboard_bot li .position_list>li {padding:5px 0;width:98%;}
+}
+
+@media only screen and (max-width: 640px) {
+
+.main_dashboard li:first-child {width:100%;float:none;}
+.main_dashboard li {width:100%;float:none}
+
+.status_box .padd_w {padding:35px 15px;}
+.status_box .st_inner_box {height:200px;}
+.main_dashboard_bot li {width:100%;float:none;}
+.main_dashboard_bot li .position_list>li {padding:5px 0;width:100%;}
+.main_dashboard_bot li .position_list>li .position_dt {float:left;width:36%;padding:10px 10px 5px 7px;font-size:14px;}
+.main_dashboard_bot li .position_list>li .position_dd {float:left;width:48%;height:40px;padding:8px 5px 5px 12px;font-size:14px;}
+
+}

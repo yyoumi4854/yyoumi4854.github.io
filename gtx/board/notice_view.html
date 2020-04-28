@@ -1,0 +1,138 @@
+<!-- #include virtual="/myoffice/common/common.inc" -->
+<!-- #include virtual="/myoffice/common/bbs_common.inc" -->
+<!-- #include virtual = /inc/head.html -->
+<!-- #include virtual = "/inc/header.html" -->
+<%
+pass_chk	= Request("pass_chk")
+isSecret	= Request("isSecret")
+
+If (isSecret = "1") And (write_level <> "ADMIN") And (session("admin") = "") Then
+	sql = "select	NVL(passwd,'-') as pass from web_bbs where sid = " & sid
+	Set rs_pass = DBConn.Execute(sql)
+
+	If rs_pass("pass") <> pass_chk Then
+		Response.Write "<script language='javascript'>"
+		Response.Write "	alert('비밀번호가 일치하지 않습니다.\n다시 확인해 주십시오.');"
+		Response.Write "	history.back();"
+		Response.Write "</script>"
+		Response.End
+	End If
+
+	rs_pass.Close : Set rs_pass = Nothing
+End If
+
+Call update_cnt("sid", sid, "visit", "web_bbs")
+
+sql =		"select	/*+ INDEX_DESC(web_bbs web_bbs_idx1)*/								"
+sql = sql & "		'C' as position, sid, userid, username, foreword, subject, content,	"
+sql = sql & "		file1_name, file2_name, file3_name, file4_name, file5_name,			"
+sql = sql & "		visit, work_date, isSecret, ip_addr, tel, mobile, email,			"
+sql = sql & "		answer_content,answer_status										"
+sql = sql & "  from	web_bbs																"
+sql = sql & " where	bbs_kind = '" & bbs_kind & "'										"
+sql = sql & "   and	sid = " & sid
+sql = sql & "union all																	"
+sql = sql & "select	/*+ INDEX_DESC(web_bbs web_bbs_idx1)*/								"
+sql = sql & "		'P' as position, sid, userid, username, foreword, subject, content,	"
+sql = sql & "		file1_name, file2_name, file3_name, file4_name, file5_name,			"
+sql = sql & "		visit, work_date, isSecret, ip_addr, tel, mobile, email,			"
+sql = sql & "		answer_content,answer_status										"
+sql = sql & "  from	web_bbs																"
+sql = sql & " where	bbs_kind = '" & bbs_kind & "'										"
+sql = sql & "   and	sid < " & sid
+sql = sql & "   and	rownum = 1															"
+sql = sql & "union all																	"
+sql = sql & "select	/*+ INDEX_ASC(web_bbs web_bbs_idx1)*/								"
+sql = sql & "		'N' as position, sid, userid, username, foreword, subject, content,	"
+sql = sql & "		file1_name, file2_name, file3_name, file4_name, file5_name,			"
+sql = sql & "		visit, work_date, isSecret, ip_addr, tel, mobile, email,			"
+sql = sql & "		answer_content,answer_status										"
+sql = sql & "  from	web_bbs																"
+sql = sql & " where	bbs_kind = '" & bbs_kind & "'										"
+sql = sql & "   and sid > " & sid
+sql = sql & "   and	rownum = 1															"
+Set rs = Dbconn.Execute(sql)
+
+prev_sid = ""	: prev_subject	= "<span style='color:#cacaca;'>이전 글이 없습니다.</span>"
+next_sid = ""	: next_subject	= "<span style='color:#cacaca;'>다음 글이 없습니다.</span>"
+
+Dim file_name(5), file_attach(5)
+
+Do While Not rs.Eof
+
+	Select Case rs("position")
+	Case "C"										'-------------------------- 현재글
+		userid		= rs("userid")
+		username	= rs("username")
+		visit		= rs("visit")
+		foreword	= rs("foreword")
+			If foreword <> "" Then
+				foreword = "[" & foreword & "]"
+			End If
+		subject		= rs("subject")
+		content		= rs("content")	: content = regularHTML(content)
+
+		answer_status	= rs("answer_status")
+		answer_content	= rs("answer_content")	: answer_content = regularHTML(answer_content)
+'			content	= replace(content,"&#34;","""")
+'			content	= replace(content,"<P>","")
+'			content	= replace(content,"</P>","<br>")
+'			content	= replace(content,"<p>","")
+'			content	= replace(content,"</p>","<br>")
+'			content	= replace(content,chr(13),"<br>")
+		visit		= rs("visit")
+		work_date	= rs("work_date")
+
+		tel			= rs("tel")
+		mobile		= rs("mobile")
+		email		= rs("email")
+		isSecret	= rs("isSecret")
+
+		tel_str		= mobile	: If tel <> "" Then tel_str = tel & "&nbsp;&nbsp;/&nbsp;&nbsp;" & tel_str
+
+		file_name(1)= rs("file1_name")
+		file_name(2)= rs("file2_name")
+		file_name(3)= rs("file3_name")
+		file_name(4)= rs("file4_name")
+		file_name(5)= rs("file5_name")
+
+		file_cnt = 0
+		For I=1 To 5
+			If file_name(I) <> "" Then
+				file_cnt = file_cnt + 1
+				file_attach(file_cnt) = "<span class=""attach_icon""><img src=""/img/common/icon_doc.png""></span> <a href=""" & file_name(I) & """ target=""_blank"">"& Right(file_name(I),Len(file_name(I))-InstrRev(file_name(I),"/")) & "</a>"
+			End If
+		Next
+	Case "P"										'-------------------------- 이전글
+		prev_sid	 = rs("sid")	: prev_subject	= rs("subject")	: isSecret	= rs("isSecret") : prev_subject = cut_string(prev_subject,50)
+		prev_subject = "<span style=""cursor:pointer;"" onClick=""command_link('move','" & prev_sid & "','" & isSecret & "');"">" & prev_subject & "</span>"
+	Case "N"
+		next_sid	 = rs("sid")	: next_subject	= rs("subject")	: isSecret	= rs("isSecret") : next_subject = cut_string(next_subject,50)
+		next_subject = "<span style=""cursor:pointer;"" onClick=""command_link('move','" & next_sid & "','" & isSecret & "');"">" & next_subject & "</span>"
+	End Select
+
+	rs.MoveNext
+Loop
+RS.Close : Set RS=nothing
+%>
+<div id="sub_container">
+  <div class="title top_event">
+    <h2>BOARD</h2>
+  </div>
+  <div class="sub_content mt110">
+    <h3>NOTICE</h3>
+	<div class="event_wrap">
+		<div class="board_head">
+			<div class="subject"><%=subject%></div>
+			<div class="date"><%=Replace(Left(work_date, 10), "-", ".")%></div>
+		</div>
+		<div class="board_content">
+			<%=content%>
+		</div>
+	</div>
+	
+	<a href="notice.html" class="btn_board_list">LIST</a>
+
+  </div>
+</div>
+<!-- #include virtual = /inc/foot.html -->

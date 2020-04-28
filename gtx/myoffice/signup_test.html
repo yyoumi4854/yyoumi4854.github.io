@@ -1,0 +1,185 @@
+<%
+Connect	= "Provider=OraOLEDB.Oracle;Data Source=MP_JAPAN;User ID=mp_etcoin;Password=mp_pass;Persist Security Info=True;PLSQLRset=1"
+Set DBConn	= Server.CreateObject("ADODB.Connection")
+DBConn.Open Connect
+%>
+
+<!-- #include virtual = "/myoffice/inc/head.html" -->
+
+<%
+Session.CodePage = "65001" : Response.CharSet = "utf-8"
+
+
+sql =		"select	username	"
+sql = sql & "  from	test_table	"
+Set rs = DBConn.Execute(sql)
+
+Do While Not rs.Eof
+
+	Response.write rs("username") & "<br>"
+	rs.MoveNext
+Loop
+rs.Close
+%>
+<div class="signupContainer">
+	<div class="signupContent">
+		<form name="reg_frm" id="reg_frm" method="post">
+
+			<div class="section">
+				<h3 class="sectionTitle">Upline Information</h3>
+				<div class="innerBox">
+					<div class="tableBox">
+						<label for="username">
+							<div class="labelInnerBox">
+								<span class="inputTitle">Placement ID</span>
+							</div>
+						</label>
+						<input type="text" name="username" id="username" placeholder="username"
+							   check="T" check_type="length" check_length="0" check_key=""
+							   title="You have to check your Placement information."
+							   maxLength="30" value="<%=p_id%>">
+						<span class="focus-input100"></span>
+					</div>
+				</div>
+			</div>
+
+			<div class="section">
+				<div class="innerBox btnWrap">
+					<button type="button" class="btnDefault" style="background:#8666b2;" id="btnSend">Signup</button>
+					<button type="button" class="btnDefault" style="background:#313133;" onClick="location.href='/myoffice/index.html';">Cancel</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<!-- #include virtual = "/myoffice/inc/footer.html" -->
+
+<script>
+$(document).ready(function() {
+});
+
+$("#btnSend").on("click", function(){
+
+	ajaxSendSignup();
+
+});
+
+function ajaxSendSignup(){
+	var url = "/myoffice/common/signup_test_proc.html";
+	var data = $("#reg_frm").serializeObject();
+
+	$.ajax({
+		url : url,
+		global :false,
+		contentType : "application/x-www-form-urlencoded; charset=euc-kr",
+		type : "POST",
+		data : data,
+		dataType: 'text',
+		crossDomain: true,
+		async:false,
+		success:function(rtnData){
+			var arrItem = rtnData.split("|");
+			var rtnState= arrItem[0];
+			var rtnMsg 	= arrItem[1].replace(/\\n/g, '\n');
+			var	rtnUrl 	= arrItem[2];
+
+			if (rtnState == "SUCCESS") {
+				alert(rtnMsg);
+				location.href = rtnUrl;
+			} else {
+				alert(rtnMsg);
+			}
+		},
+		error:function(reponse,textStatus,errorThrown){
+			alert("Sorry!!! Some errors are occurred.\n\nPlease try again later.\n\nThank you.");
+		},
+		beforeSend:function(){
+		}
+	});
+}
+
+
+jQuery.fn.validation = function(){
+	var fn_chek = false;
+	if(this[0].tagName && this[0].tagName.toUpperCase() == "FORM" ) {
+		var obj = $(this).find(":input");
+		$.each(obj, function(index, value){
+			var field_check = $(value).attr("check");
+			var field_type	= $(value).attr("check_type");
+			var field_length= $(value).attr("check_length");
+			var field_key	= $(value).attr("check_key");
+			var	field_alert	= $(value).attr("title");
+			var field_value	= $(value).val();
+			if (field_check == "T") {
+				if (value.type == "checkbox"){
+					field_key = (field_key) ? Number(field_key) : 1;
+					if ($("input:checkbox[name=" + value.name + "]:checked").length < field_key){
+						alert(field_alert);
+						$(value).focus();
+						fn_chek = false;
+						return false;
+					}
+				} else if (value.type == "radio"){
+					if ($("input:radio[name=" + value.name + "]:checked").length < 1){
+						alert(field_alert);
+						$(value).focus();
+						fn_chek = false;
+						return false;
+					}
+				} else if (field_type == "length") {
+					if (field_value.length <= Number(field_length))	{
+						alert(field_alert);
+						$(value).focus();
+						fn_chek = false;
+						return false;
+					}
+				} else if (field_type == "value") {
+					if (field_value != field_key)
+					{
+						alert(field_alert);
+						$(value).focus();
+						fn_chek = false;
+						return false;
+					}
+				}
+			}
+			fn_chek = true;
+		});
+		return fn_chek;
+	}
+}
+
+jQuery.fn.serializeObject = function() {
+	var obj = null;
+	try {
+		// this[0].tagName이 form tag일 경우
+		if(this[0].tagName && this[0].tagName.toUpperCase() == "FORM" ) {
+			var arr = this.serializeArray();
+			if(arr){
+				obj = {};
+				jQuery.each(arr, function() {
+					// obj의 key값은 arr의 name, obj의 value는 value값
+
+					switch(this.name) {
+						case "wallet":
+						case "wallet_code":
+							if (obj[this.name]){
+								obj[this.name] += "," + this.value;
+							}else{
+								obj[this.name] = this.value;
+							}
+							break;
+						default:
+							obj[this.name] = this.value;
+					}
+				});
+			}
+		}
+	}catch(e) {
+		alert(e.message);
+	}finally  {}
+
+	return obj;
+};
+</script>

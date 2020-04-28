@@ -1,0 +1,48 @@
+<%@ CodePage="65001" Language="vbscript"%>
+<!-- #include virtual ="/myoffice/common/common.inc" -->
+<%
+order_no	= Request("order_no")
+tran_no		= Request("tran_no")
+
+inj_chk		= check_injection("")
+
+If inj_chk <> "OK" Then
+	res_state	= "FAIL"
+	res_msg		= "Some characters are not allowed.\nPlease check your input data."
+
+Else
+
+	sql =		"select	count(order_seq) as t_cnt		"
+	sql = sql & "  from	order_pay						"
+	sql = sql & " where	order_no = '" & order_no & "'	"
+	sql = sql & "   and	tran_no is null					"
+	sql = sql & "   and pay_state = 'W'					"
+
+	Set rs_chk = DBConn.Execute(sql)
+		t_cnt = CInt(rs_chk("t_cnt"))
+	rs_chk.close : Set rs_chk = Nothing
+
+	If t_cnt = 0 Then
+		msg = "Order data does not exist."
+		res_state = "FAIL"
+		res_msg = msg
+	Else
+		sql =		"update order_pay									"
+		sql = sql & "	set tran_no = '" & tran_no & "',				"
+		sql = sql & "		update_user = '" & Session("userid") & "',	"
+		sql = sql & "		update_date = sysdate						"
+		sql = sql & " where order_no = '" & order_no & "'				"
+		sql = sql & "   and pay_state = 'W'								"
+		sql = sql & "   and	tran_no is null								"
+		DBConn.Execute(sql)
+
+		msg = "You have successfully entered the Transaction ID."
+
+		res_state = "SUCCESS"
+		res_msg = msg
+
+	End If
+End If
+Response.Write res_state & "|" & res_msg
+%>
+<!--#include virtual="/myoffice/common/db_close.inc"-->

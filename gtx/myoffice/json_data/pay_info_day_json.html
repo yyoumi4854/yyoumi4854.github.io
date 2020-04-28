@@ -1,0 +1,103 @@
+<!--#include virtual="/myoffice/common/db_connect.inc"-->
+<!--#include virtual="/myoffice/common/jsonObject.class.asp"-->
+<%
+'Option Explicit
+userid		= Request("userid")		: If userid = "" Then userid = Session("userid")
+st_date		= Request("st_date")
+ed_date		= Request("ed_date")
+
+currentPage	= Request("currentPage") 	: If currentPage = "" Then currentPage = 0	'// get the requested page
+pageSize	= Request("pageSize")		: If pageSize = "" Then pageSize = 10		'// get how many rows we want to have into the grid
+
+
+' field name
+Dim pay_name(), pay_field(), each_total()
+
+Set rs_name = Server.CreateObject("ADODB.RecordSet")
+rs_name.CursorType = 3
+
+sql =		"select	pay_name, pay_field	"
+sql = sql & "  from	pay_name			"
+sql = sql & " where	pay_kind = '5101'	"
+sql = sql & "   and	isUse = '1'			"
+sql = sql & " order by seq				"
+rs_name.Open sql, DBConn
+
+pay_cnt		= rs_name.RecordCount
+span_cnt	= pay_cnt + 4
+
+If pay_cnt = 0 Then
+	pay_detail = "F"
+Else
+	pay_detail	= "T"
+	pay_sql		= ""
+
+	ReDim pay_name(pay_cnt), pay_field(pay_cnt),each_total(pay_cnt)
+
+	For i=1 To pay_cnt
+
+		pay_name(i)		= rs_name("pay_name")
+		pay_field(i)	= rs_name("pay_field")
+		each_total(i)	= 0
+
+		pay_sql = pay_sql & "a." & rs_name("pay_field") & " as " & rs_name("pay_field")
+		If i < pay_cnt Then pay_sql = pay_sql & ", "
+
+		rs_name.MoveNext
+	Next
+
+End If
+rs_name.Close
+
+' // field name
+
+	sql =		"select	a.pay_date, a.userid, a.username,							"
+	sql = sql & "		a.total_amt, a.total_tax, a.true_amt,	a.add_amt,			"
+	sql = sql & pay_sql
+	sql = sql & "  from	pay_day a, pay_info b										"
+	sql = sql & " where	a.pay_date = b.pay_date										"
+	sql = sql & "   and	b.show_yn = '1'												"
+	sql = sql & "   and	a.userid = '" & userid			 & "'						"
+	sql = sql & "   and	a.pay_date between '" & st_date & "' and '" & ed_date & "'	"
+	sql = sql & " order by a.pay_date desc											"
+
+	Set rs = Server.CreateObject("ADODB.RecordSet")
+	rs.cursortype = 3
+	rs.Open sql, DBConn
+
+    Set JSONParse = New JSONobject
+	Set JSONarr = New JSONarray
+
+    While Not rs.EOF
+
+		tex2		= rs("tax2")
+		d01_pnt		= rs("d01_pnt")
+		ethereum	= rs("ethereum")
+
+        Set JSON = New JSONobject
+
+
+		JSON.Add "pay_date",	rs("pay_date")
+		For i=1 To pay_cnt
+		JSON.Add pay_field(i),	rs(pay_field(i))
+		Next
+		JSON.Add "total_amt",	rs("total_amt")
+		JSON.Add "total_tax",	rs("total_tax")
+		JSON.Add "true_amt",	rs("true_amt")
+		JSON.Add "tax2",		"-"
+		JSON.Add "d01_pnt",		"-"
+		JSON.Add "ethereum",	"-"
+'		JSON.Add "tax2",		rs("tax2")
+'		JSON.Add "d01_pnt",		d01_pnt
+'		JSON.Add "ethereum",	ethereum
+
+		JSONarr.Push JSON
+	    rs.MoveNext
+    Wend
+
+    JSONParse.Add "list" ,JSONarr
+	JSONParse.Write()
+
+rs.Close		: Set rs = Nothing
+DBConn.Close	: Set DBConn = Nothing
+%>

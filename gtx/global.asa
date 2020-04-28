@@ -1,0 +1,67 @@
+<SCRIPT LANGUAGE="vbscript" RUNAT="server">
+Sub Session_OnStart
+
+	Session.TimeOut = 180
+
+	Session("comspec")		= "TEST"
+
+	Session("company")		= "GTeXpress"
+	Session("DB_CONNECT")	= "Y"
+	Log_Write				= "N"
+
+	Session("conn_ip")		= Request.ServerVariables("Remote_Addr")
+
+	time_serial	= Year(date) & Right("0"&Month(date),2) & Right("0"&Day(date),2) & Right("0"&Hour(now),2) & Right("0"&Minute(now),2)
+
+'------------------------------------------------------------------------------ DB 연결 설정
+	ConnectFile = "D:\WEB_SERVICE\_site_info\info_gtx.dat"
+
+    Set fsCon	= Server.CreateObject("Scripting.FileSystemObject")
+    Set fsFile	= fsCon.OpenTextFile( ConnectFile )
+    info_read	= fsFile.Readline
+    fsFile.Close
+
+	info_temp	= Split(info_read,":")
+
+	Session("db_type")	= info_temp(0)
+	Session("db_home")	= info_temp(1)
+	Session("db_user")	= info_temp(2)
+	Session("db_pass")	= info_temp(3)
+	Session("enc_IV")	= info_temp(4)
+	Session("enc_Key")	= info_temp(5)
+
+
+'------------------------------------------------------------------------------ 접속 로그 기록 S
+	If Log_Write = "Y" Then
+		REFERER = UCase(Request.ServerVariables("HTTP_REFERER"))
+		If IsNull(REFERER) Or Len(REFERER) = 0 Then
+			REFERER = "DIRECT"
+		Else
+			REFERER	= Replace(REFERER,"HTTPS://","")
+			REFERER	= Replace(REFERER,"HTTP://","")
+			REFERER	= Split(REFERER,"/")(0)
+		End If
+
+		Connect = "Provider=OraOLEDB.Oracle;Data Source=" & Session("db_home") & ";User ID=" & Session("db_user") & ";Password=" & Session("db_pass") & ";Persist Security Info=True"
+		Set DBConn	= Server.CreateObject("ADODB.Connection")
+		DBConn.Open Connect
+			sql =		"insert into WEB_LOG values ( "
+			sql = sql & ""	&	"LOG_SEQ.NextVal"							& ",	"
+			sql = sql & "'"	&	"WEB"										& "',	"
+			sql = sql & "'"	&	REFERER										& "',	"
+			sql = sql & "'"	&	Session("conn_ip")							& "',	"
+			sql = sql & "'"	&	Request.ServerVariables("PATH_INFO")		& "',	"
+			sql = sql & "'" &	"-"											& "',	"
+			sql = sql & ""	&	"sysdate"									& ",	"
+			sql = sql & "'"	&	Request.ServerVariables("HTTP_USER_AGENT")	& "')	"
+		DBConn.Execute(sql)
+
+		DBConn.Close
+	End If
+'------------------------------------------------------------------------------ 접속 로그 기록 E
+End Sub
+
+Sub Session_OnEnd
+	Session.Abandon
+End Sub
+</SCRIPT>

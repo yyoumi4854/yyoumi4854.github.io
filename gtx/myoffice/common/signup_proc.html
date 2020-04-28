@@ -1,0 +1,148 @@
+<%@ CodePage="65001" Language="vbscript"%>
+<!-- #include virtual="/myoffice/common/common.inc"-->
+<!-- #include virtual="/myoffice/common/adovbs.inc" -->
+<%
+'printRequest()
+'Response.End
+
+'On Error Resume Next
+
+post_str = ""
+
+For Each Key In Request.Form
+	post_str = post_str & CStr(Key) & ":" & Request.Form(Key) & "|"
+Next
+
+sql =		"insert into LOG_FORM_CHECK (		"
+sql = sql & "	idx, page, form_value			"
+sql = sql & ") values (							"
+sql = sql & ""	&	"LOG_SEQ.NextVal"	& ",	"
+sql = sql & "'"	&	"signup_proc.html"	& "',	"
+sql = sql & "'"	&	post_str			& "'	"
+sql = sql & ")									"
+DBConn.Execute(sql)
+
+recomm_id	= Trim(Request.Form("recomm_id"))
+parents_id	= Trim(Request.Form("parents_id"))	: If parents_id = "" Then parents_id = recomm_id
+country		= Trim(Request.Form("country"))
+center		= Trim(Request.Form("center"))
+
+birth_y		= Trim(Request.Form("birth_y"))
+birth_m		= Trim(Request.Form("birth_m"))
+birth_d		= Trim(Request.Form("birth_d"))
+birth_day	= birth_y & "-" & birth_m & "-" & birth_d	: If birth_day = "--" Then birth_day = ""
+If birth_day <> "" Then
+	rrn			= Right(birth_y,2) & birth_m & birth_d & "-*******"
+End If
+
+login_id	= Trim(Request.Form("exp_id"))
+passwd		= Trim(Request.Form("passwd"))
+
+mobile		= Trim(Request.Form("mobile"))
+email		= Trim(Request.Form("email"))
+
+position	= Trim(Request.Form("position"))
+
+ip_addr		= Request.ServerVariables("REMOTE_ADDR")
+work_user	= Trim(Request.Form("work_user"))	: If work_user = "" Then work_user = "WEB"
+
+firstname	= Trim(Request.Form("firstname"))
+lastname	= Trim(Request.Form("lastname"))
+
+username	= firstname & " " & lastname
+eng_name	= lastname & "," & firstname
+
+user_kind 	= Trim(Request.Form("user_kind"))
+
+inj_chk		= check_injection("")
+
+If inj_chk <> "OK" Then
+
+	res_state = "FAIL"
+	res_msg	= "Some characters are not allowed.\nPlease check your input data."
+	res_url = ""
+
+Else
+
+	'--------------------------------------------------------- 회원 등록 Procedure 호출
+	set objCom  = Server.CreateObject("ADODB.Command")
+	With objCom
+
+		.ActiveConnection = DBConn
+		.CommandType = 4
+		.CommandText = "PROC_JOIN"
+
+		.Parameters.Append .CreateParameter("SP_REG_DATE",		adVarChar,	adParamInput,	10,	Date)
+		.Parameters.Append .CreateParameter("SP_USERNAME",		adVarChar,	adParamInput,	30,	username)
+		.Parameters.Append .CreateParameter("SP_ENG_NAME",		adVarChar,	adParamInput,	30,	eng_name)
+		.Parameters.Append .CreateParameter("SP_LOGIN_ID",		adVarChar,	adParamInput,	20,	login_id)
+		.Parameters.Append .CreateParameter("SP_PASSWD",		adVarChar,	adParamInput,	20,	passwd)
+		.Parameters.Append .CreateParameter("SP_COUNTRY",		adVarChar,	adParamInput,	20,	country)
+		.Parameters.Append .CreateParameter("SP_JUMIN_NO",		adVarChar,	adParamInput,	20,	rrn)
+		.Parameters.Append .CreateParameter("SP_BIRTH",			adVarChar,	adParamInput,	20,	birth_day)
+
+		.Parameters.Append .CreateParameter("SP_TEL",			adVarChar,	adParamInput,	20,	tel)
+		.Parameters.Append .CreateParameter("SP_MOBILE",		adVarChar,	adParamInput,	20,	mobile)
+		.Parameters.Append .CreateParameter("SP_EMAIL",			adVarChar,	adParamInput,  150,	email)
+		.Parameters.Append .CreateParameter("SP_ZIPCODE",		adVarChar,	adParamInput,    7,	"")
+		.Parameters.Append .CreateParameter("SP_ADDRESS1",		adVarChar,	adParamInput,  400,	"")
+		.Parameters.Append .CreateParameter("SP_ADDRESS2",		adVarChar,	adParamInput,  400,	"")
+
+		.Parameters.Append .CreateParameter("SP_BANK_NATION",	adVarChar,	adParamInput,  100,	"")
+		.Parameters.Append .CreateParameter("SP_BANK_CD",		adVarChar,	adParamInput,   10,	"")
+		.Parameters.Append .CreateParameter("SP_BANK_NAME",		adVarChar,	adParamInput,  100,	"")
+		.Parameters.Append .CreateParameter("SP_BANK_ACCOUNT",	adVarChar,	adParamInput,  100,	"")
+		.Parameters.Append .CreateParameter("SP_BANK_OWNER",	adVarChar,	adParamInput,  100,	"")
+
+		.Parameters.Append .CreateParameter("SP_PARENTS_ID",	adVarChar,	adParamInput,	20,	parents_id)
+		.Parameters.Append .CreateParameter("SP_RECOMM_ID",		adVarChar,	adParamInput,	20,	recomm_id)
+		.Parameters.Append .CreateParameter("SP_POS_P",			adVarChar,	adParamInput,	20,	"0")
+
+		.Parameters.Append .CreateParameter("SP_USER_KIND",		adVarChar,	adParamInput,	20,	user_kind)
+		.Parameters.Append .CreateParameter("SP_PATH_KIND",		adVarChar,	adParamInput,	30,	"2504")
+		.Parameters.Append .CreateParameter("SP_GENDER",		adVarChar,	adParamInput,	 1,	"")
+		.Parameters.Append .CreateParameter("SP_CENTER",		adVarChar,	adParamInput,	 8,	center)
+
+		.Parameters.Append .CreateParameter("SP_REMARK",		adVarChar,	adParamInput,	30,	"")
+
+		.Parameters.Append .CreateParameter("SP_IP_ADDR",		adVarChar,	adParamInput,	30,	Ip_addr)
+		.Parameters.Append .CreateParameter("SP_WORK_USER",		adVarChar,	adParamInput,	30,	work_user)
+		.Parameters.Append .CreateParameter("SP_USERID",		adVarChar,	adParamOutput,	50)
+		.Parameters.Append .CreateParameter("SP_RESULT",		adVarChar,	adParamOutput,	50)
+		.Parameters.Append .CreateParameter("SP_ERROR",			adVarChar,	adParamOutput,	1000)
+		.Execute  , , adExecuteNoRecords
+	End With
+		SP_USERID	= objCom.Parameters("SP_USERID").VALUE
+		SP_RESULT	= objCom.Parameters("SP_RESULT").VALUE
+		SP_ERROR	= objCom.Parameters("SP_ERROR").VALUE
+	Set objCom = Nothing
+
+	If SP_RESULT = "SUCCESS" Then
+		If Session("userid") = "" Then
+			session("userid")		= SP_USERID
+			session("username")		= username
+			session("login_id")		= login_id
+			session("user_kind")	= user_kind
+			session("center_cd")	= center
+
+			res_url = "/myoffice/order/order_history.html"
+		Else
+			res_url = ""
+		End If
+
+		res_state = "SUCCESS"
+		res_msg = "Congratulation!!! You have successfully registered as a GTeXpress member."
+
+	Else
+		err_msg = Replace(Replace(SP_ERROR,"'",""),"""","")
+
+		res_state = "FAIL"
+		res_msg = "Sorry!!! Some errors are occurred.\nPlease try again later.\n'" & err_msg
+		res_url = ""
+	End If
+
+End If
+
+Response.Write SP_RESULT & "|" & res_msg & "|" & res_url
+%>
+<!--#include virtual="/myoffice/common/db_close.inc"-->

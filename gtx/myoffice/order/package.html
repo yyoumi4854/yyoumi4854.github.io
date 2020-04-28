@@ -1,0 +1,124 @@
+<%@ CodePage="65001" Language="vbscript"%>
+<!-- #include virtual = "/myoffice/common/common.inc" -->
+
+<!-- #include virtual = "/myoffice/inc/head.html" -->
+
+<!-- #include virtual = "/myoffice/inc/header.html" -->
+
+<!-- #include virtual = "/myoffice/inc/nav.html" -->
+<% Call Check_Login("/myoffice") %>
+<%
+user_kind = Session("user_kind")
+If user_kind = "2101" Then
+	packageName = "Reseller Package"
+	cate_cd1 	= "0004"
+	txtButtom 	= "Package Benefit 40%DC"
+ElseIf user_kind = "2102" Then
+	packageName = "Agency Package"
+	cate_cd1 	= "0005"
+	txtButtom 	= "Package Benefit 60%DC"
+Else
+	Response.Write "구매 가능한 패케지가 없습니다."
+	Response.End
+End If
+%>
+<div id="container">
+	<div class="contentHeader">
+		<h3 class="contentTitle"><i class="fa fa-th-large" aria-hidden="true"></i> Order</h3>
+	</div>
+	<div class="content">
+		<!------ 내용 시작 ------->
+		<div class="package_order">
+			<h2><%=packageName%></h2>
+
+			<div class="order_con">
+				<ul>
+					<%
+					sql = 		"select  a.product_cd, a.product_name, 		"
+					sql = sql & "		 b.amt, c.img_l, a.isset			"
+					sql = sql & "  from  product a, product_detail b,		"
+					sql = sql & "		 pdt_webinfo c						"
+					sql = sql & " where  a.product_cd = b.product_cd		"
+					sql = sql & "   and  a.product_cd = c.product_cd(+)		"
+					sql = sql & "   and  a.isuse = '1'						"
+					sql = sql & "   and  a.cate_cd1 = '" & cate_cd1 & "'	"
+					sql = sql & " order by a.sort_no	 					"
+					Set rs = DBConn.Execute(sql)
+					classOn = "class=""on"""
+					Do While Not rs.EOF
+						pack_cd 	= rs("product_cd")
+						pack_name 	= rs("product_name")
+						pack_amt 	= rs("amt")
+						pack_img 	= rs("img_l")
+						pack_isset 	= rs("isset")
+					%>
+					<li <%=classOn%> id="<%=pack_cd%>">
+						<a href="#">
+							<div class="pro_img">
+								<img src="<%=pack_img%>" alt="">
+								<p><%=FormatNumber(pack_qty, 0)%></p>
+							</div>
+							<div class="txt_wrap">
+								<p class="tit"><%=pack_name%></p>
+								<p>(Qty: <%=FormatNumber(pack_qty, 0)%>)<br>GTXp <%=FormatNumber(pack_amt, 0)%></p>
+								<span>(Unit price $<%=FormatNumber(pack_amt, 2)%>)</span>
+							</div>
+							<p><%=txtButtom%></p>
+						</a>
+					</li>
+					<%
+						classOn = ""
+						rs.MoveNext
+					Loop
+					rs.Close : Set rs = Nothing
+					%>
+					<!--
+					<li>
+						<a href="#">
+							<div class="pro_img">
+								<img src="../img/order/package_shield_img.jpg" alt="GENESHIELD Anti-Virus">
+								<p>5</p>
+							</div>
+							<div class="txt_wrap">
+								<p class="tit">GENESHIELD Anti-Virus</p>
+								<p>(Qty: 5)<br>GTXp 100</p>
+								<span>(Unit price $20)</span>
+							</div>
+							<p>Package Benefit 40%DC</p>
+						</a>
+					</li>
+					-->
+					<p class="or">OR</p>
+				</ul>
+
+
+				<button type="button" onclick="fnSetProduct();">PROCCED TO PAYMENT</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- #include virtual = "/myoffice/inc/footer.html" -->
+<script>
+$(function(){
+	$(".order_con ul li").click(function(e){
+		e.preventDefault();
+		$(".order_con ul li").removeClass("on");
+		$(this).toggleClass("on");
+	});
+});
+function fnSetProduct(){
+	var product_cd = "";
+	$.each($(".order_con ul li"), function(){
+		var $this = $(this);
+		if ($this.hasClass("on")) {
+			product_cd = $this.attr("id");
+			location.href = "./order_package.html?product_cd=" + product_cd;
+		}
+	});
+	if (!product_cd){
+		alert("Please choice of the <%=packageName%>.");
+		return false;
+	}
+}
+</script>

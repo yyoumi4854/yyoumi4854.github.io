@@ -1,0 +1,54 @@
+body,td,th { font-family:"µ¸¿ò"; font-size:12px;}
+body {background-color: #ffffff;	margin-left: 0px;	margin-top: 0px;	margin-right: 0px;	margin-bottom: 0px;}
+img	{border:0px;}
+
+
+a:link    {font-family: µ¸¿ò;	font-size: 12px; color:#797979;	text-decoration: none;}
+a:visited {font-family: µ¸¿ò;	font-size: 12px; color:#797979;	text-decoration: none;}
+a:hover   {font-family: µ¸¿ò;	font-size: 12px; color:#797979;	text-decoration: none;}
+a:active  {font-family: µ¸¿ò;	font-size: 12px; color:#797979;	text-decoration: none;}
+
+a.link01:link    {font-family: µ¸¿ò;	font-size: 12px; color:#ffffff;	text-decoration: none; font-weight: bold;}
+a.link01:visited {font-family: µ¸¿ò;	font-size: 12px; color:#ffffff;	text-decoration: none; font-weight: bold;}
+a.link01:hover   {font-family: µ¸¿ò;	font-size: 12px; color:#ffff00;	text-decoration: none; font-weight: bold;}
+a.link01:active  {font-family: µ¸¿ò;	font-size: 12px; color:#ffff00;	text-decoration: none; font-weight: bold;}
+
+.png24 {tmp:expression(setPng24(this));}
+.title_blue2 {font-size:16px;font-family: µ¸¿ò; color:#3b7bc3; line-height:200%; font-weight:bold; letter-spacing:-1px;}
+
+.searchbox { color: #686868; font-family: "µ¸¿ò"; font-size: 9pt; border:1px solid #BBCEA2; height=18px; background-color:#FAFAFA}
+.textbox { color: #686868; font-family: "µ¸¿ò"; font-size: 9pt; border:1px solid #BBCEA2; background-color:#FAFAFA }
+
+.board {  font-family: "µ¸¿ò"; font-size: 9pt; color: #666666; text-decoration: none}
+.board :link {color: #666666; text-decoration:none; font-family: "µ¸¿ò"; font-size: 9pt}
+.board :visited {color: #666666; text-decoration:none; font-family: "µ¸¿ò"; font-size: 9pt}
+.board :hover {color: #333333; text-decoration:none; cursor:hand; font-family: "µ¸¿ò"; font-size: 9pt; font-style: normal}
+.board :active{color: #666666; text-decoration:none; font-family:"µ¸¿ò"; font-size: 9pt; font-style: normal}
+
+.scheduleday {background-color:#F4FBDF; font-family: "µ¸¿ò"; font-size: 9pt; color: #659034; text-decoration: none; font-weight: bold}
+.scheduleday :link {background-color:#F4FBDF; font-family: "µ¸¿ò"; font-size: 9pt; color: #659034; text-decoration: none; font-weight: bold}
+.scheduleday :visited {background-color:#F4FBDF; font-family: "µ¸¿ò"; font-size: 9pt; color: #659034; text-decoration: none; font-weight: bold}
+.scheduleday :hover {background-color:#F4FBDF; font-family: "µ¸¿ò"; font-size: 9pt; color: #659034; text-decoration: none; font-weight: bold}
+.scheduleday:active {background-color:#F4FBDF; font-family: "µ¸¿ò"; font-size: 9pt; color: #659034; text-decoration: none; font-weight: bold}
+
+
+.day {font-family: "µ¸¿ò"; font-size: 8pt; color: #666666;  text-decoration: none }
+.text {font-family: "µ¸¿ò"; font-size: 9pt; color: #666666;  text-decoration: none }
+.title {  font-family: "µ¸¿ò"; font-size: 9pt; color: #659034; text-decoration: none; font-weight: bold}
+.t_title {  font-family: "±¼¸²"; font-size: 10pt; color: #FFFFFF; text-decoration: none; font-weight: bold}
+.titext {  font-family: "µ¸¿ò"; font-size: 9pt; color: #333333; text-decoration: none}
+.ti {  font-family: "µ¸¿ò"; font-size: 9pt; color: #659034; text-decoration: none}
+.tabletop {background-color:#b4762c; }
+.tabletitle {background-color:#F4FBDF; font-family: "µ¸¿ò"; font-size: 9pt; color: #659034; text-decoration: none}
+.tableti {background-color:#E2EDC2; font-family: "µ¸¿ò"; font-size: 9pt; color: #659034; text-decoration: none; font-weight: bold}
+.tableleft {background-color:#F4FBDF; font-family: "µ¸¿ò"; font-size: 9pt; color: #659034; text-decoration: none; font-weight: bold}
+.consumer {  font-family: "µ¸¿ò"; font-size: 9pt; color: #659034; text-decoration: none}
+.schedule {  font-family: "µ¸¿ò"; font-size: 8pt; color: #747474; text-decoration: none}
+.sday {font-family: "µ¸¿ò"; font-size: 9pt; color: #FFAC84;  text-decoration: none ; font-weight: bold}
+.daybg {background-color:#F4FBDF; }
+
+/*leftmenu*/
+.mn_txt		{padding:4 10 0 15; color:#FFFFFF; font-size:12px; font-weight:bold;}
+.smn_txt	{padding:3 10 0 8; color:#888787; font-size:12px; border-bottom:1px #dddddd dashed;}
+
+

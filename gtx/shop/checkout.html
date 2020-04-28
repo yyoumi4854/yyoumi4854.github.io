@@ -1,0 +1,462 @@
+<!-- #include virtual="/myoffice/common/common.inc" -->
+<!-- #include virtual = /inc/head.html -->
+<!-- #include virtual = "/inc/header.html" -->
+<%
+Call Check_Login("/member/login.html")
+order_form  = Request("order_form")
+product_cd  = Replace(Request("product_cd"), " ", "")
+qty         = Replace(Request("qty"), " ", "")
+userid      = Session("userid")
+
+If product_cd = "" Then
+  Response.Write "<script>alert('상품정보가 존재하지 않습니다.');location.href='/product/product_list.html';</script>"
+  Response.End
+End If
+
+arr_prod  = Split(product_cd, ",")
+arr_qty   = Split(qty, ",")
+%>
+<div class="check_out shop">
+  <div class="inner">
+    <h2>CHECK OUT</h2>
+    <form name="form1" id="form1" method="post" onSubmit="return frm_chk()">
+      <input type="hidden" name="userid"		value="<%=Session("userid")%>">
+      <input type="hidden" name="order_kind"	value="4102">
+      <input type="hidden" name="center_cd"	value="<%=Session("center_cd")%>">
+    <table class="item_list">
+      <tr class="tit">
+        <td class="check">ITEM</td>
+        <td></td>
+        <td>PRICE</td>
+        <td>QTY</td>
+        <td>POINT</td>
+        <td>TOTAL PRICE</td>
+      </tr>
+      <%
+      sub_amt = 0	: sub_pv1 = 0 : tot_amt = 0	: deli_sum = 0 : tot_ord=0
+			deli_price = 0
+      For i=0 To UBound(arr_prod)
+
+        sql =		"select	a.product_cd, a.product_name, b.amt, b.pv1, b.pv2,	"
+        sql = sql & "		c.img_l, c.deli_amt	,b.price,b.vat,			            "
+        sql = sql & "		a.model_name									                      "
+        sql = sql & "  from	product a, product_detail b, pdt_webInfo c			"
+        sql = sql & " where	a.product_cd = b.product_cd							        "
+        sql = sql & "   and	a.product_cd = c.product_cd(+)						      "
+        sql = sql & "   and	b.reg_date = (select max(reg_date)					    "
+        sql = sql & "						from product_detail					                "
+        sql = sql & "					   where product_cd = a.product_cd)		        "
+        sql = sql & "   and	a.product_cd = '" & Trim(arr_prod(i)) & "'			"
+        Set rs=DBConn.Execute(sql)
+
+        qty			 = arr_qty(i)
+        product_cd	 = rs("product_cd")
+        product_name = rs("product_name")
+        model_name   = rs("model_name")
+        price		 = rs("price")
+        vat			 = rs("vat")
+        pdt_img		 = rs("img_l")
+          If IsNull(pdt_img) Or Len(pdt_img) < 3 Then
+            pdt_img = "/img/shop/thum/image/comming.jpg"
+          Else
+            If InStr(pdt_img, "/") = 0 Then pdt_img = "/upload/product/" & pdt_img
+          End If
+        pdt_amt	= rs("amt")
+        pdt_pv1	= rs("pv1")
+        sub_amt = sub_amt + CCur(pdt_amt) * qty
+        sub_pv1 = sub_pv1 + CCur(rs("pv1")) * qty
+
+        deli_amt	=rs("DELI_AMT") '배송비
+        If  isnull(deli_amt) Then deli_amt=0 Else deli_amt=CDbl(deli_amt) End If
+        '배송비의 합
+        deli_sum	= deli_sum + deli_amt
+
+        '단가의 합
+        tot_amt		= tot_amt + sub_amt
+        '포인트의 합
+        tot_pv1		= tot_pv1 + sub_pv1
+
+        rs.Close : Set rs = Nothing
+      %>
+      <input type="hidden" name="product_cd"	value="<%=product_cd%>"	/>
+      <input type="hidden" name="product_name" value="<%=product_name%>" />
+      <input type="hidden" name="price"		value="<%=price%>" />
+      <input type="hidden" name="vat"			value="<%=vat%>" />
+      <input type="hidden" name="pdt_amt"		value="<%=pdt_amt%>" />
+      <input type="hidden" name="pdt_pv1"		value="<%=pdt_pv1%>" />
+      <input type="hidden" name="pdt_pv2"		value="<%=pdt_pv2%>" />
+      <tr class="list">
+        <td class="pro_img">
+          <img src="<%=pdt_img%>" alt="">
+        </td>
+        <td class="txt right">
+          <p><%=product_name%></p>
+          <% If model_name <> "" Then %>
+          <p><%=model_name%></p>
+          <% End If %>
+        </td>
+        <td class="right">$<%=FormatNumber(pdt_amt, 2)%></td>
+        <td class="count right">
+          <div class="count_wrap">
+            <button type="button" id="m_qty_<%=product_cd%>" onclick="fnChangeQty(this);" class="minus">-</button>
+            <input type="text" name="qty" id="qty_<%=product_cd%>" value="<%=arr_qty(i)%>" readonly="">
+            <button type="button" id="p_qty_<%=product_cd%>" onclick="fnChangeQty(this);" class="pluse">+</button>
+          </div>
+        </td>
+        <td class="right">
+          <span class="txt_no">POINT :</span>
+          <span><%=pdt_pv1%></span>
+        </td>
+        <td class="price">
+          <span class="txt_no">TOTAL PRICE :</span>
+          <span>$<%=FormatNumber(sub_amt, 2)%></span>
+        </td>
+      </tr>
+      <%
+        sub_amt = 0
+        sub_pv1 = 0
+      Next
+
+      If tot_amt < 0 Then
+        deli_sum = deli_price
+      Else
+        deli_sum = 0
+      End If
+      '총 단가의합 과 배송비의 합 (최종금액)
+      tot_ord = tot_amt+deli_sum
+      %>
+    </table>
+
+    <div class="con_bottom">
+      <div class="check_out">
+        <div class="top">
+          <p>
+            <span>SUB TOTAL</span>
+            <span id="buyAmt">$<%=FormatNumber(tot_amt, 2)%></span>
+          </p>
+
+          <p>
+            <span>SHIPPING</span>
+            <span>$<%=FormatNumber(deli_sum, 2)%></span>
+          </p>
+
+          <select class="" name="">
+            <option value="">Standard -FREE</option>
+          </select>
+        </div>
+        <div class="bottom">
+          <p>
+            <span>ESTIMATED TOTAL</span>
+            <span id="totBuyAmt">$<%=FormatNumber(tot_ord, 2)%></span>
+          </p>
+        </div>
+      </div>
+    </div>
+				<%
+				sql =		"select	a.username,a.zipcode,a.e_mail,																"
+				sql = sql & "  ENCRYPTION_AES.DEC_AES(a.bank_account) as ebank_account, ENCRYPTION_AES.DEC_AES(a.tel) as tel,	"
+				sql = sql & "  ENCRYPTION_AES.DEC_AES(a.mobile) as mobile, ENCRYPTION_AES.DEC_AES(a.address1) as  address1,		"
+				sql = sql & "  ENCRYPTION_AES.DEC_AES(a.address2) address2														"
+				sql = sql & "  from	dist A																						"
+				sql = sql & " where	A.userid = '" & userid & "'																	"
+				Set rs_u = DBConn.Execute(sql)
+
+				username	= rs_u("username")
+				tel_temp	= fn_normal(rs_u("tel"),"-","TEL")
+				tel_no		= Split(tel_temp,",")
+
+				ord_mobile	= rs_u("mobile")
+				mobile_temp	= fn_normal(ord_mobile,"-","TEL")
+				mobile_no	= Split(mobile_temp,",")
+
+
+				zip_code	= rs_u("zipcode")
+				addr1		= rs_u("address1")
+				addr2		= rs_u("address2")
+
+				ord_email	= rs_u("e_mail")
+				email_temp	= fn_normal(ord_email,"@","MAIL")
+				email		= Split(email_temp,",")
+
+				rs_u.Close : Set rs_u = Nothing
+				%>
+					<input  type="hidden" name="user_name" id="user_name" size="12" value="<%=username%>" />
+					<input  type="hidden" name="depositor" id="depositor" size="12" value="<%=username%>" />
+					<input	type="hidden" name="user_tel1" id="user_tel1" class="tel" value="<%=tel_no(0)%>" />
+					<input	type="hidden" name="user_tel2" id="user_tel2" class="tel"  value="<%=tel_no(1)%>"/>
+					<input	type="hidden" name="user_tel3" id="user_tel3" class="tel" value="<%=tel_no(2)%>" />
+					<input	type="hidden" name="user_mobile1" id="user_mobile1" class="tel" value="<%=mobile_no(0)%>" />
+					<input	type="hidden" name="user_mobile2" id="user_mobile2" class="tel" value="<%=mobile_no(1)%>" />
+					<input	type="hidden" name="user_mobile3" id="user_mobile3" class="tel" value="<%=mobile_no(2)%>" />
+					<input  type="hidden" name="user_zip1" size="7" id="user_zip" readonly value="<%=zip_code%>"  />
+					<input	type="hidden" name="user_addr1" id="user_addr1" readonly size="50" value="<%= ADDR1 %>" />
+					<input	type="hidden" name="user_addr2" id="user_addr2" size="50" value="<%= ADDR2 %>" />
+					<input  type="hidden" name="user_email" id="user_email"	value="<%= ord_email %>">
+    <div class="info1 info">
+      <h3>SHIPPING INFORMATION</h3>
+      <table class="info_tb">
+        <tr>
+          <th>Name</th>
+          <td><input  type="text" name="d_name" id="d_name" value=""
+										title="수취인 성명을 입력해 주십시오."
+										check='T' check_type='length' check_length='1' check_key='' /></td>
+        </tr>
+
+        <tr>
+          <th>Mobile</th>
+          <td><input type="text" name="d_mobile" id="d_mobile" value=""
+                    title="휴대폰 번호는 배송을 위해 반드시 필요합니다."
+										check='T' check_type='length' check_length='2' check_key='' /></td>
+        </tr>
+
+        <tr>
+          <th>Phone</th>
+          <td><input type="text" name="d_tel" id="d_tel" value="" /></td>
+        </tr>
+
+        <tr>
+          <th>Email</th>
+          <td><input type="email" name="d_email" id="d_email" value=""
+										title="이메일 주소를 입력해 주십시오."
+										check='T' check_type='length' check_length='1' check_key='' /></td>
+        </tr>
+
+        <tr>
+          <th>Address1</th>
+          <td><input type="text" name="d_addr1" id="d_addr1" value=""
+										title="배송지를 입력해 주십시오."
+										check='T' check_type='length' check_length='1' check_key='' /></td>
+        </tr>
+
+        <tr>
+          <th>Address2</th>
+          <td><input type="text" name="d_addr2" id="d_addr2" value=""
+										title="배송지를 입력해 주십시오."
+										check='T' check_type='length' check_length='1' check_key='' /></td>
+        </tr>
+
+        <tr>
+          <th>Zipcode</th>
+          <td><input type="text" name="d_zipcode" id="d_zipcode" value=""
+										title="배송지 우편번호를 입력해 주십시오."
+										check='T' check_type='length' check_length='1' check_key='' /></td>
+        </tr>
+
+        <tr>
+          <th>Message</th>
+          <td><textarea name="d_remark" id="d_remark"></textarea></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="info2 info">
+      <h3>BILLING INFORMAION</h3>
+
+      <table class="info_tb">
+        <tr>
+          <th>Order Total</th>
+          <td>
+            <p id="txt_tot_ord">$<%=FormatNumber(tot_ord, 2)%></p>
+            <p>( Total Price : <label id="txt_tot_amt">$<%=FormatNumber(tot_amt, 2)%></label> / Shipping Charge : Free)</p>
+          </td>
+        </tr>
+
+        <tr>
+          <th>Billing Method</th>
+          <td>
+            <label><input type="radio" name="pay_kind" value="POINT" id="point"> Point</label>
+
+            <label><input type="radio" name="pay_kind" value="BANK" id="deposit"> Deposit</label>
+          </td>
+        </tr>
+
+        <tr class="point">
+          <th></th>
+          <td>
+            <input type="text" name="point_amt" id="point_amt" value="<%=tot_amt%>" readonly />
+              <p>
+                <span>Available Points :&nbsp;</span>
+                <span id="spnAvailGTXp">0</span>
+              </p>
+              <input type="hidden" name="avail_GTXp" id="avail_GTXp" value="0" />
+            </td>
+          </tr>
+
+          <tr class="deposit">
+            <th></th>
+            <td>
+              <select class="" name="ab_cd" id="ab_cd" onchange="fnSelectABank(this);">
+                <option value="" data-ab_account="">Select Bank</option>
+                <%
+                sql =       "select  a.ab_cd, a.ab_name,          "
+                sql = sql & "        a.ab_account, a.ab_depositor "
+                sql = sql & "  from  admit_bank a                 "
+                sql = sql & " where  a.isuse = '1'                "
+                sql = sql & " order by a.ab_name                  "
+                Set rs_ab = DBConn.Execute(sql)
+                Do While Not rs_ab.EOF
+                  Response.Write "<option value=""" & rs_ab("ab_cd") & """ data-ab_account=""" & rs_ab("ab_account") & """>" & rs_ab("ab_name") & "</option>"
+                  rs_ab.MoveNext
+                Loop
+                rs_ab.Close : Set rs_ab = Nothing
+                %>
+              </select>
+              <input type="text" name="ab_account" id="ab_account" value="" placeholder="Account Number" readonly />
+            </td>
+          </tr>
+        </table>
+
+      </div>
+				<input type="hidden" name="prod_name"	value="<%=product_name%>">
+				<input type="hidden" name="tot_amt"	id="tot_amt"	value="<%=tot_ord%>">
+				<input type="hidden" name="deli_amt"	value="<%=deli_sum%>">
+      <div class="order_btn">
+        <button type="button" onclick="fnCheckOut();">PLACE YOUR ORDER</button>
+      </div>
+    </div>
+    </form>
+  </div>
+<script>
+  $(function(){
+    $("input[type='radio'][name='pay_kind']").click(function(){
+      fnCalcAmt();
+      var point = $("#point").is(":checked");
+      var deposit = $("#deposit").is(":checked");
+
+      if (point == true){
+        $(".point").show();
+        amt_check();
+      }else{
+        $(".point").hide();
+        clearInterval(window.ref);
+      }
+
+      if (deposit == true){
+        $(".deposit").show();
+      }else{
+        $(".deposit").hide();
+      }
+    });
+  });
+
+  function fnChangeQty(_this) {
+    var aKey = $(_this).attr("id");
+    var tmp_cd = aKey.replace("p_qty_", "").replace("m_qty_", "");
+    aKey = aKey.replace("_"+tmp_cd, "");
+    var t_qty = Number($("#qty_"+tmp_cd).val());
+
+    if (aKey == "p_qty"){
+      t_qty += 1;
+    } else {
+      t_qty -= 1;
+      if (t_qty < 1){
+        alert("수량은 최소 1보다 작을 수 없습니다.");
+        t_qty = 1;
+      }
+    }
+
+    $("#qty_"+tmp_cd).val(t_qty);
+    fnCalcAmt();
+  }
+
+  function fnCalcAmt(){
+    var buyAmt = 0;
+    var $target = $('.item_list').find('tr');
+    $.each($target, function(index, value){
+      $this = $(this);
+      if ($this.hasClass('list')) {
+        var $t_qty    = $this.find('input[name=qty]');
+        var $t_unit   = $this.find('td').eq(2);
+        var $t_unitTot= $this.find('.price').find('span').eq(1);
+        var unitTot = Number($t_qty.val()) * Number($t_unit.text().replace('$', ''));
+        buyAmt += unitTot;
+      }
+    });
+    $('#buyAmt, #totBuyAmt, #txt_tot_ord, #txt_tot_amt').text(numeral(buyAmt).format('$0,0.00'));
+    $('#tot_amt, #point_amt').val(buyAmt);
+  }
+
+  function amt_check() { window.ref = window.setInterval(function() { get_amt(); }, 500); }
+  
+  function get_amt() {
+    clearInterval(window.ref);
+    $.ajax('/myoffice/common/get_money.html',{
+      success:function(data){
+        var amt_temp = data.split("|");
+        var tot_GTXp	 = (amt_temp[0]) ? amt_temp[0] : 0;
+
+        $("#spnAvailGTXp").text(formatComma(tot_GTXp, 2));
+        $("#avail_GTXp").val(tot_GTXp);
+      }
+    });
+
+    amt_check();
+  }
+
+  function fnSelectABank(_this){
+    var ab_account = $('#' + _this.id + ' option:selected').data('ab_account');
+    $("#ab_account").val(ab_account);
+  }
+
+  function fnCheckOut(){
+    fnCalcAmt();
+    if (!$("#form1").validation()){
+      proc_ok = "F";
+      return false;
+    }
+
+    var pay_kind = $("input:radio[name=pay_kind]:checked").val();
+    if (pay_kind == "BANK") {
+      if (!$("#ab_cd").val()){
+        alert("입금 계좌를 선택해 주세요.");
+        $("#ab_cd").focus();
+        return false;
+      }
+    } else if (pay_kind == "POINT") {
+      var point_amt = $("#point_amt").val();
+      var avail_GTXp = $("#avail_GTXp").val();
+      if (Number(point_amt) > Number(avail_GTXp)){
+        alert("사용가능 금액이 부족 합니다. ");
+        return false;
+      }
+    } else {
+      alert("결제 방법을 선택하세요.");
+      return false;
+    }
+
+    var url = "/myoffice/common/order_proc.html";
+    var data = $("#form1").serializeObject();
+    $('.order_btn').loading('start');
+    $.ajax({
+        url : url,
+        global :false,
+        contentType : "application/x-www-form-urlencoded; charset=utf-8",
+        type : "POST",
+        data : data,
+        dataType: 'text',
+        crossDomain: true,
+        async:false,
+        success:function(rtnData){
+            var arrItem = rtnData.split("|");
+            var rtnState= arrItem[0];
+            var rtnMsg 	= arrItem[1].replace(/\\n/g, '\n');
+            var	rtnOrd 	= arrItem[2];
+
+            if (rtnState == "SUCCESS") {
+                alert(rtnMsg);
+                location.href="./order_complete.html?order_no="+rtnOrd;
+            } else {
+                alert(rtnMsg);
+                $('.order_btn').loading('stop');
+            }
+        },
+        error:function(reponse,textStatus,errorThrown){
+            alert("error");
+            $('.order_btn').loading('stop');
+        },
+        beforeSend:function(){
+        }
+    });
+  }
+  </script>
+  <!-- #include virtual = /inc/foot.html -->

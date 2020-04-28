@@ -1,0 +1,222 @@
+/* layout.css */
+html.open {
+	overflow:hidden;
+	-webkit-overflow-scrolling:touch;
+}
+#wrap {
+	position:relative;
+	min-width:340px;
+}
+.btnLogout {
+	position:absolute;
+	right:20px;
+	top:22px;
+	z-index:300;
+	background:#eaeef2;
+	color:#56616d;
+	border:1px solid #ccd5df;
+}
+#header {
+	position:fixed;
+	left:0;
+	top:0;
+	width:240px;
+	height:76px;
+}
+#btnMenu {
+	display:none;
+	height:auto;
+	padding:0;
+    background:none;
+    color: #0082ff;
+    border:0;
+    border-radius:0;
+	cursor:pointer;
+}
+.logo {
+	padding:20px 0;
+	background:#fff;	
+	text-align:center;
+}
+.logo a {
+}
+.logo img {
+	max-width:200px;
+	width:100%;
+	vertical-align:top;
+}
+#aside {
+	position:fixed;
+	left:0;
+	top:76px;
+	width:240px;
+	min-height:100%;
+	background:#20409a;
+}
+.nav_depth1 {
+}
+
+.nav_depth1>li:first-child {position:relative;}
+.nav_depth1>li:first-child .home_link {display:block;position:absolute;width:100%;height:100%;opacity:0;top:0;left:0;z-index:99;}
+.nav_depth1>li:first-child .depth1_item:after {background:none;}
+
+
+.list_depth1 {
+	background:#20409a;
+	border-bottom:1px solid #2e7ecf;
+	cursor:pointer;
+}
+.depth1_item {
+	display:block;
+	position:relative;
+	padding:10px 41px 10px 35px;
+	color:#fff;
+	font-size:15px;
+}
+.depth1_item:hover{
+	color:#ddf3fc;
+}
+.depth1_item:before {
+	position:absolute;
+	left:10px;
+	top:13px;
+	width:17px;
+	height:16px;
+	content:"";
+}
+.depth1_item:after {
+	position:absolute;
+	right:15px;
+	top:17px;
+	width:11px;
+	height:6px;
+	background:url(/myoffice/img/arrow/up_arrow.png) no-repeat;
+	transform: rotate(180deg);
+	content:"";
+}
+a.depth1_item:after {
+	background:none;
+}
+.list_depth1.open .depth1_item {
+	background:#4291e2;
+	color:#fff;
+}
+.list_depth1.open .depth1_item:after {
+	transform: rotate(0deg);
+}
+.depth1_item[data-listIndex="0"]:before {
+	background:url(/myoffice/img/common/icon_menu_00.png) no-repeat;
+}
+.depth1_item[data-listIndex="1"]:before {
+	background:url(/myoffice/img/common/icon_menu_01.png) no-repeat;
+}
+.depth1_item[data-listIndex="2"]:before {
+	background:url(/myoffice/img/common/icon_menu_02.png) no-repeat;
+}
+.depth1_item[data-listIndex="3"]:before {
+	background:url(/myoffice/img/common/icon_menu_03.png) no-repeat;
+}
+.depth1_item[data-listIndex="4"]:before {
+	background:url(/myoffice/img/common/icon_menu_04.png) no-repeat;
+}
+.depth1_item[data-listIndex="5"]:before {
+	background:url(/myoffice/img/common/icon_menu_05.png) no-repeat;
+}
+.nav_depth2 {
+	display:none;
+	padding:7px 0;
+	background:#f2f3f9;
+}
+.list_depth2 {
+}
+.depth2_item {
+	display:block;
+	position:relative;
+	padding:7px 10px 7px 35px;
+	color:#a7a7af;
+	font-size:13px;
+}
+.list_depth1.open .nav_depth2 .depth2_item:hover {
+	background:#75c1ed;
+	color:#fff;
+}
+.depth2_item:before {
+	position:absolute;
+	left:15px;
+	top:14px;
+	width:7px;
+	height:7px;
+	background:url(/myoffice/img/common/icon_depth2.png);
+	content:""
+}
+#container {
+	position:relative;
+	margin-left:240px;
+}
+.contentHeader {
+	height:76px;
+	padding:20px;
+	background:#fff;
+	border-bottom:1px solid #d8d8d8;
+}
+.contentTitle {
+	font-size:22px;
+	font-weight:normal;
+}
+.contentTitle i {
+	margin-right:8px;
+}
+.content {
+	padding:20px;
+	background:#f9faff;
+}
+#footer {
+}
+
+@media only screen and (max-width: 1024px) {
+	.btnLogout {
+		right:15px;
+	}
+	#header{
+		width:100%;
+		z-index:100;
+	}
+	#btnMenu {
+		display:block;
+		position:absolute;
+		left:15px;
+		top:14px;
+		font-size:2rem;
+	}
+	.logo {
+		padding:20px 10px 20px 60px;
+		text-align:left;
+		background:#f5f5f5;
+		border-bottom:1px solid #ebebeb;
+	}
+	#aside {
+		margin-left:-240px;
+		z-index:600;
+		-webkit-transition: 250ms cubic-bezier(0.1, 0.57, 0.1, 1);
+				transition: 250ms cubic-bezier(0.1, 0.57, 0.1, 1);
+		-webkit-transform: translate(0px, 0px) translateZ(0px);
+				transform: translate(0px, 0px) translateZ(0px);
+	}
+	#aside.open {
+		margin-left:0;
+	}
+	#container{
+		top:76px;
+		margin:0;
+	}
+	.contentHeader {
+		height:auto;
+		padding:10px 20px;
+	}
+	.contentTitle {
+		font-size:16px;
+	}
+	.content {
+		padding:10px;
+	}
+}

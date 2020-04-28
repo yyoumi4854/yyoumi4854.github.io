@@ -1,0 +1,25 @@
+<!-- #include virtual="/myoffice/common/common.inc" -->
+<!-- #include virtual = /inc/head.html -->
+<!-- #include virtual = "/inc/header.html" -->
+<%
+order_no = Request("order_no")
+%>
+<div class="check_out shop">
+  <div class="inner">
+    <h2>ORDER COMPLETE</h2>
+		<div class="final_notice">
+				<img src="/img/shop/icon_complete.png">
+				<p class="complete_notice01">
+					Congratulations! Your order has been placed.<br />
+					You will receive an confirmation email with your order details.
+				</p>
+				<p class="complete_notice02">
+					The order number of the product you ordered is <span class="order_num"># <%=order_no%></span>.<br />
+					Thank you for using.
+				</p>
+			</div>
+			<a href="/" class="btn_go_shopping">BACK TO HOME</a>
+    </div>
+  </div>
+
+  <!-- #include virtual = /inc/foot.html -->

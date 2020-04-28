@@ -1,0 +1,40 @@
+<!-- #include virtual ="/myoffice/common/common.inc" -->
+<%
+Response.CacheControl = "no-cache"	: Response.AddHeader "Pragma","no-cache" : Response.Expires = 0	: Response.Buffer = True
+On Error Resume Next
+'printRequest()
+
+firstname	= Trim(Request.Form("firstname"))
+lastname	= Trim(Request.Form("lastname"))
+mobileno	= Trim(Request.Form("mobileno"))
+email		= Trim(Request.Form("email"))
+
+username 	= Trim(firstname & " " & lastname)
+mobile		= Replace(mobileno, "-", "")
+
+sql =		"select	userid, login_id								"
+sql = sql & "  from	vDIST											"
+sql = sql & " where	isClass = '1'									"
+sql = sql & "   and	username				= '" & username & "'	"
+sql = sql & "   and	e_mail					= '" & email 	& "'	"
+sql = sql & "   and	Replace(mobile,'-','')	= '" & mobile	& "'	"
+Set rs = DBConn.Execute(sql)
+
+If rs.Eof Then
+	proc_stat	= "FAIL"
+	proc_msg	= "There is no member corresponding to the information you entered."
+Else
+	login_id	= rs("login_id")
+	userid		= rs("userid")
+	If login_id = userid Then
+		login_id = ""
+	End If
+	proc_stat	= "SUCCESS"
+	proc_msg	= "The member's ID is \""" & login_id & "\"" [ " & userid & " ]"
+End If
+
+rs.Close
+'Response.Write sql & "<br />"
+Response.Write "{""rtn_state"":""" & proc_stat & """,""rtn_msg"":""" & proc_msg & """}"
+%>
+<!--#include virtual="/myoffice/common/db_close.inc"-->

@@ -1,0 +1,39 @@
+<%@ CodePage="65001" Language="vbscript"%>
+<!-- #include virtual = "/myoffice/common/common.inc" -->
+<% Call Check_Login("")%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>조직도</title>
+	<script type="text/javascript" src="./jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="./jquery-ui-1.9.2.custom.min.js"></script>
+	<script src="./jquery.losmap.js"></script>
+	<script src="./losmap.js"></script>
+	<link rel="stylesheet" href="./jquery.losmap.css?jinGlobalCustom"/>
+</head>
+
+<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
+
+<%
+t_id	= Request("t_id")	'"S0000000"
+t_lv	= Request("t_lv")	'6
+t_map	= Request("t_map")
+%>
+
+<div id="loader" style="display:none;position:absolute;top:200px; left:300px; width:100px; height:100px; z-index:9999; background:#fff;">
+	<img src="./img/loader_01.gif">
+</div>
+
+<input type="hidden" id="t_id"		value="<%=t_id%>">
+<input type="hidden" id="t_lv"		value="<%=t_lv%>">
+<input type="hidden" id="map_type"	value="<%=t_map%>">
+
+<div id="wrapper" style="border:0px solid #91a9c8; height:510px; background:#fff;">
+	<div id="map_contents" style="top:0px; left:0px; background:#fff;"></div>
+</div>
+
+</body>
+
+</html>

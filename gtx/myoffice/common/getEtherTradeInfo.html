@@ -1,0 +1,93 @@
+<!--#include virtual ="/myoffice/common/common.inc"-->
+<!--#include virtual="/myoffice/common/jsonObject.class.asp"-->
+
+<%
+	Dim http: Set http = Server.CreateObject("WinHttp.WinHttpRequest.5.1")
+
+	time_serial = Year(date) &"-"&Right("0"&Month(date),2) &"-"& Right("0"&Day(date),2)&"T"& Right("0"&Hour(now),2)&":"& Right("0"&Minute(now),2) &":"& Right("0"&Second(now),2)
+	symbol = request("symbol")
+	If symbol = "" Then
+	symbol = "ethusdt"
+	End If 
+	fMETHOD= "GET"
+	fCONTEXT_TYPE = "JSON"
+	fATOKEN = ""
+	fURL = "https://api.huobi.pro/market/detail/merged"
+	fAUTH_PARAM = "?AccessKeyId=fe24157c-1c67a439-2cbae414-1528e&SignatureMethod=HmacSHA256&SignatureVersion=2&Signature=4BF6E4799367039093E2D8305819218495E8DF9843802B6F35029D4859E71EF0&Timestamp="&time_serial
+	fPARAM ="&symbol="&symbol
+
+	fURL = fURL &fAUTH_PARAM &fPARAM
+
+	If fMETHOD = "" Then
+		fMETHOD = "POST"
+	End If
+
+
+	if fCONTEXT_TYPE = "JSON" Then
+		context_type = "application/json"
+	ElseIf fCONTEXT_TYPE = "FORM" Then
+		context_type = "application/x-www-form-urlencoded"
+	Else
+		context_type = "application/json"
+	End If
+
+
+	With http
+
+		Call .Open(fMETHOD, fURL, False)
+		Call .SetRequestHeader("Content-Type", context_type)
+
+		If fATOKEN <>"" Then
+			Call .SetRequestHeader("Authorization", "Bearer " & fATOKEN)
+		End If
+
+		Call .Send(fXML)
+
+	End With
+
+
+		'sql =		"update	log_api											"
+		'sql = sql & "   	check_ready		= '" & http.ReadyState	& "',	"
+		'sql = sql & "	set	check_status	= '" & http.Status		& "'	"
+		'sql = sql & " where	idx				=  " & new_seq
+		'DBConn.Execute(sql)
+
+		strResult = http.responseText
+
+		'sql =		"update	log_api									"
+		'sql = sql & "   set	rcv_date	= sysdate					"
+		'sql = sql & " where	idx			=  " & new_seq
+		'DBConn.Execute(sql)
+
+		'Set rs_update = server.CreateObject("adodb.recordset")
+		'	rs_update.open "select rcv_xml from log_api where idx = " & new_seq, DBConn, 3,3
+		'	rs_update.fields("rcv_xml").appendChunk(strResult)
+		'	rs_update.update
+		'rs_update.Close
+
+	Set JSONParse = New JSONobject	
+
+	If Left(http.Status, 1) = 2  Then
+	'정상 호출
+		'arr_fnSOAP(0) ="true"
+		'arr_fnSOAP(1)=new_seq
+		'arr_fnSOAP(2)=http.Status
+		'arr_fnSOAP(3)=http.StatusText
+		'arr_fnSOAP(4)=strResult    '리턴된 xml 값
+		Set result_json = JSONParse.Parse(strResult)
+
+	Else
+
+	'비정상호출
+		'arr_fnSOAP(0) ="false"		'정상/비정상 구분
+		'arr_fnSOAP(1)=new_seq		'DB인덱스값
+		'arr_fnSOAP(2)=http.Status
+		'arr_fnSOAP(3)=http.StatusText
+		Set result_json = JSONParse.Parse(strResult)    '리턴된 xml 값
+
+	End If
+	Response.Write result_json.Serialize()
+	'Response.Write "<textarea cols=100 rows=30>" & strResult & "</textarea>" & "<br>"
+	'Response.Flush
+	Set http = Nothing
+%>

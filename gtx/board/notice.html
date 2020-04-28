@@ -1,0 +1,127 @@
+<!-- #include virtual = /inc/head.html -->
+<!-- #include virtual = "/inc/header.html" -->
+<div id="sub_container">
+  <div class="title top_event">
+    <h2>BOARD</h2>
+  </div>
+  <div class="sub_content mt110">
+    <h3>NOTICE</h3>
+
+
+	<div class="event_wrap">
+		<!-------------------- search ----------------------->
+		<div class="search_box">
+			<ul class="search_list">
+				<li>
+					<input type="hidden" name="bbs_kind" value="<%=bbs_kind%>" />
+					<select name="srch_key" id="srch_key">
+						<option value="subject" selected>subject</option>
+						<option value="all">all</option>
+						<option value="content">content</option>
+					</select>
+				</li>
+				<li>
+					<input type="text"  name="srch_val" id="srch_val" class="search_word">
+				</li>
+				<li>
+					<a href="#" class="btn_search" onClick="fnGoPage(1);">
+						<img src="/img/board/icon_search.png" alt="search" />
+					</a>
+				</li>
+			</ul>
+		</div>
+		<div class="board_tb_box">
+			<table class="board_tb">
+				<colgroup>
+					<col style="width:60px">
+					<col style="width:80%;">
+					<col style="width:15%">
+				</colgroup>
+				<tbody id="bbsList"></tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="paging"></div>
+
+	<!-- 내용이 없을 경우 -->
+	<!-- <div class="empty">
+		<p>There are no announcements.</p>
+	</div> -->
+
+  </div>
+</div>
+<!-- #include virtual = /inc/foot.html -->
+<script>
+	function bbs_list_json(bbs_kind, _pageNo){
+		var _pageSize	= 10;
+		var _perArea	= 5;
+		var _totalPages = 0;
+		var srch_key	= $("#srch_key").val();
+		var srch_val	= $("#srch_val").val();
+		var bbs_cate	= "";
+		var $bbsList	= $("#bbsList");
+		var url = "/myoffice/json_data/bbs_list2_json.html";
+		var data = {
+				page	 : _pageNo-1,
+				pageSize : _pageSize,
+				bbs_kind : bbs_kind,
+				srch_key : srch_key,
+				srch_val : escape(srch_val),
+				bbs_cate : escape(bbs_cate)
+			};
+
+		$.post(url, data, function(jsonData) {
+			var addHtml = "";
+			var bbsList = jsonData.list;
+			var bbsPage = jsonData.page;
+
+			_totalPages = bbsPage.totalElements;
+
+			$.each(bbsList, function(index, value){
+				addHtml += "<tr>";
+				addHtml += "<td>" + echoNull2Blank(value.tempNo)	+ "</td>";
+				addHtml += "<td>" + "<a style=\"cursor:pointer;\" onClick=\"view_article('" + value.sid + "','" + value.isSecret + "');\">" + echoNull2Blank(value.subject) + "</a>" + "</td>";
+				addHtml += "<td>" + echoNull2Blank(value.work_date) + "</td>";
+				addHtml += "</tr>";
+			});
+
+			$bbsList.html(addHtml);
+
+			if (_totalPages == 0) {
+				$bbsList.append('<tr><td colspan="3">There is no registered contnets.</td></tr>');
+			}
+
+			$(".paging").jqueryPager({pageSize: _pageSize,
+										pageBlock: _perArea,
+										currentPage: _pageNo,
+										pageTotal: _totalPages,
+										clickEvent: 'fnGoPage'});
+		}, 'json')
+		.fail(function (jqXHR, textStatus, errorThrown) {
+			alert('HTTP status code: ' + jqXHR.status + '\n' +
+				'textStatus: ' + textStatus + '\n' +
+				'errorThrown: ' + errorThrown);
+			alert('HTTP message body (jqXHR.responseText): ' + '\n' + jqXHR.responseText);
+		});
+	}
+
+	function fnGoPage(n){
+		bbs_list_json("NOTICE", n);
+	}
+
+	$(function(){
+		fnGoPage(1);
+	});
+
+	function view_article(a_id, a_lock) {
+		var query	= "sid=" + a_id + "&isSecret=" + a_lock;
+		var url_	= "./notice_view.html?" + query;
+
+		if (a_lock == '1') {
+			// 비밀글
+		} else {
+			location.href = url_;
+		}
+	}
+</script>

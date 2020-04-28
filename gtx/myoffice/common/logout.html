@@ -1,0 +1,18 @@
+<%@ CodePage="65001" Language="vbscript"%>
+<%
+Response.CharSet = "utf-8"
+
+session("userid")		= ""
+session("username")		= ""
+session("login_id")		= ""
+session("user_kind")	= ""
+session("center_cd")	= ""
+Session.Abandon
+
+Response.Write "<script language='javascript'>"
+Response.Write "alert('Thank you for visiting our site.\nLogout process has been taken successfully.');"
+Response.Write "top.location.href = '/';"
+Response.Write "</script>"
+
+
+%>

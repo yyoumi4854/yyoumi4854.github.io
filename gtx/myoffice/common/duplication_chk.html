@@ -1,0 +1,67 @@
+<%@ CodePage="65001" Language="vbscript"%>
+<!-- #include virtual ="/myoffice/common/common.inc" -->
+<%
+check_val	= Request("check_val")
+
+inj_chk		= check_injection("")
+
+If inj_chk <> "OK" Then
+	res_state	= "FAIL"
+	res_msg		= "Some characters are not allowed.\nPlease check your input data."
+'	Response.Write "<script language='javascript'>"
+'	Response.Write "	alert('" & res_msg & "');"
+'	Response.Write "</script>"
+'	Response.End
+Else
+
+	sql =		"select	count(userid) as id_cnt							"
+	sql = sql & "  from	dist											"
+	sql = sql & " where	Upper(login_id) = Upper('" & check_val & "')	"
+	Set rs_chk = DBConn.Execute(sql)
+		id_cnt = CInt(rs_chk("id_cnt"))
+	rs_chk.close : Set rs_chk = Nothing
+
+	If id_cnt = 0 Then
+		msg = "You can use " & check_val & " as your login id.\n" & "Do you want to use this login id?"
+'		Response.Write "<script language='javascript'>"
+'		Response.Write "	if(confirm('" & msg & "')) {"
+'		Response.Write "		parent.document.getElementById('id_chk_btn').style.display = 'none';"
+'		Response.Write "		parent.document.getElementById('exp_id').style.background = '#cfe4e1';"
+'		Response.Write "		parent.document.getElementById('exp_id').readOnly = true;"
+'		Response.Write "		parent.document.getElementById('dupl_chk').value = 'T';"
+'		Response.Write "	} else {"
+'		Response.Write "		parent.document.getElementById('id_chk_btn').style.display = 'inline';"
+'		Response.Write "		parent.document.getElementById('exp_id').style.background = '#fff';"
+'		Response.Write "		parent.document.getElementById('exp_id').value = '';"
+'		Response.Write "		parent.document.getElementById('exp_id').readOnly = false;"
+'		Response.Write "		parent.document.getElementById('dupl_chk').value = '';"
+'		Response.Write "	}"
+'		Response.Write "</script>"
+'		Response.End
+
+		res_state = "SUCCESS"
+		res_msg = msg
+
+	Else
+
+		msg = "입력하신 " & check_val & "은 이미 사용된 아이디입니다.\n다른 아이디를 지정해주십시오."
+		msg = "Sorry !!! " & check_val & " has already been used."
+
+'		Response.Write "<script language='javascript'>"
+'		Response.Write "	alert('" & msg & "');"
+'		Response.Write "	parent.document.getElementById('id_chk_btn').style.display = 'inline';"
+'		Response.Write "	parent.document.getElementById('exp_id').style.background = '#fff';"
+'		Response.Write "	parent.document.getElementById('login_id').value = '';"
+'		Response.Write "	parent.document.getElementById('exp_id').readOnly = false;"
+'		Response.Write "	parent.document.getElementById('dupl_chk').value = '';"
+'		Response.Write "</script>"
+'		Response.End
+
+		res_state = "FAIL"
+		res_msg = msg
+
+	End If
+End If
+Response.Write res_state & "|" & res_msg
+%>
+<!--#include virtual="/myoffice/common/db_close.inc"-->

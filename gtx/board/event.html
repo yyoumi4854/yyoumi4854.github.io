@@ -1,0 +1,213 @@
+<!-- #include virtual = /inc/head.html -->
+<!-- #include virtual = "/inc/header.html" -->
+<div id="sub_container">
+  <div class="title top_event">
+    <h2>BOARD</h2>
+  </div>
+  <div class="sub_content mt110">
+    <h3>EVENT</h3>
+
+	<ul class="tab_menu">
+	  <li class="on"><a href="#" data-tab="tab_con1">ALL EVENTS</a></li>
+	  <li><a href="#" data-tab="tab_con2">ONGOING EVENTS</a></li>
+	  <li><a href="#" data-tab="tab_con3">ENDED EVENTS</a></li>
+	</ul>
+
+	<div class="event_wrap">
+		<ul class="event_list">
+			<!--
+			<li>
+				<div class="event_box">
+					<div class="event_thum_img"><img src="/img/board/event_sample02.jpg"></div>
+					<div class="event_info">
+						<p class="event_name">New Product Launching Event</p>
+						<p class="event_txt">Recieve a Free, Full-Size.<br />
+								Fresh Balacing Lotion  With Your $80 Purchase.
+						</p>
+						<p class="event_term">2020.03.17 ~ 2020.03.27
+						</p>
+					</div>
+					<a href="event_view.html" class="link_event"></a>
+				</div>
+			</li>
+			<li>
+				<div class="event_box">
+					<div class="event_thum_img"><img src="/img/board/event_sample02.jpg"></div>
+					<div class="event_info">
+						<p class="event_name">New Product Launching Event</p>
+						<p class="event_txt">Recieve a Free, Full-Size.<br />
+								Fresh Balacing Lotion  With Your $80 Purchase.
+						</p>
+						<p class="event_term">2020.03.17 ~ 2020.03.27
+						</p>
+					</div>
+					<a href="event_view.html" class="link_event"></a>
+				</div>
+			</li>
+			<li>
+				<div class="event_box">
+					<div class="event_thum_img"><img src="/img/board/event_sample02.jpg"></div>
+					<div class="event_info">
+						<p class="event_name">New Product Launching Event</p>
+						<p class="event_txt">Recieve a Free, Full-Size.<br />
+								Fresh Balacing Lotion  With Your $80 Purchase.
+						</p>
+						<p class="event_term">2020.03.17 ~ 2020.03.27
+						</p>
+					</div>
+					<a href="event_view.html" class="link_event"></a>
+				</div>
+			</li>
+			<li>
+				<div class="event_box event_end">
+					<div class="event_thum_img">
+						<img src="/img/board/event_sample01.jpg">
+
+						<div class="event_end_screen">
+							<div class="end_caption">ENDED EVENT</div>
+						</div>
+
+					</div>
+					<div class="event_info">
+						<p class="event_name">New Product Launching Event</p>
+						<p class="event_txt">Recieve a Free, Full-Size.<br />
+								Fresh Balacing Lotion  With Your $80 Purchase.
+						</p>
+						<p class="event_term">2020.03.17 ~ 2020.03.27
+						</p>
+					</div>
+					<a href="#" class="link_event"></a>
+				</div>
+			</li>
+			<li>
+				<div class="event_box event_end">
+					<div class="event_thum_img">
+						<img src="/img/board/event_sample01.jpg">
+
+						<div class="event_end_screen">
+							<div class="end_caption">ENDED EVENT</div>
+						</div>
+
+					</div>
+					<div class="event_info">
+						<p class="event_name">New Product Launching Event</p>
+						<p class="event_txt">Recieve a Free, Full-Size.<br />
+								Fresh Balacing Lotion  With Your $80 Purchase.
+						</p>
+						<p class="event_term">2020.03.17 ~ 2020.03.27
+						</p>
+					</div>
+					<a href="#" class="link_event"></a>
+				</div>
+			</li>
+			-->
+		</ul>
+	</div>
+
+	<div class="paging"></div>
+
+	<!-- 내용이 없을 경우 -->
+	<!-- <div class="empty">
+		<p>There are no registered events.</p>
+	</div> -->
+
+  </div>
+</div>
+<!-- #include virtual = /inc/foot.html -->
+<script>
+	function bbs_list_json( _pageNo, _kind){
+		var _pageSize	= 9;
+		var _perArea	= 5;
+		var _totalPages = 0;
+		var srch_key	= $("#srch_key").val();
+		var srch_val	= $("#srch_val").val();
+		var $bbsList	= $(".event_list");
+		var url = "/myoffice/json_data/list_event_info_json.html";
+		var data = {
+				page	 : _pageNo-1,
+				pageSize : _pageSize,
+				srch_key : srch_key,
+				srch_val : srch_val,
+				is_end	 : _kind
+			};
+
+		$.post(url, data, function(jsonData) {
+			var addHtml = "";
+			var bbsList = jsonData.list;
+			var bbsPage = jsonData.page;
+
+			_totalPages = bbsPage.totalElements;
+
+			$.each(bbsList, function(index, value){
+				addHtml += '<li>';
+				addHtml += '	<div class="event_box event_end">';
+				addHtml += '		<div class="event_thum_img">';
+				addHtml += '			<img src="' + echoNull2Blank(value.thum_img) + '">';
+				if (value.is_end == "1") {
+					addHtml += '		<div class="event_end_screen">';
+					addHtml += '			<div class="end_caption">ENDED EVENT</div>';
+					addHtml += '		</div>';
+				}
+				addHtml += '		</div>';
+				addHtml += '		<div class="event_info">';
+				addHtml += '			<p class="event_name">New Product Launching Event</p>';
+				addHtml += '			<p class="event_txt">' + echoNull2Blank(value.title) + '</p>';
+				addHtml += '			<p class="event_term">' + echoNull2Blank(value.start_date) + " ~ " + echoNull2Blank(value.end_date) + '</p>';
+				addHtml += '		</div>';
+				addHtml += '		<a href="#" onClick="view_article(\"' + value.idx + '\");" class="link_event"></a>';
+				addHtml += '	</div>';
+				addHtml += '</li>';
+			});
+
+			$bbsList.html(addHtml);
+
+			if (_totalPages == 0) {
+				$bbsList.append('<li style="width:100%;text-align: center;"><p>There is no registered event.</p></li>');
+			}
+
+			$(".paging").jqueryPager({pageSize: _pageSize,
+										pageBlock: _perArea,
+										currentPage: _pageNo,
+										pageTotal: _totalPages,
+										clickEvent: 'fnGoPage'});
+		}, 'json')
+		.fail(function (jqXHR, textStatus, errorThrown) {
+			alert('HTTP status code: ' + jqXHR.status + '\n' +
+				'textStatus: ' + textStatus + '\n' +
+				'errorThrown: ' + errorThrown);
+			alert('HTTP message body (jqXHR.responseText): ' + '\n' + jqXHR.responseText);
+		});
+	}
+
+	function view_article(a_id) {
+		var query	= "idx=" + a_id;
+		var url_	= "./event_view.html?" + query;
+
+		location.href = url_;
+	}
+
+	function fnGoPage(n){
+		var kind = '';
+		$('.tab_menu > li').each(function(index, value){
+			if ($(this).hasClass('on')) {
+				if (index == 1) {
+					kind = '0';
+				} else if (index == 2) {
+					kind = '1';
+				}
+			}
+		});
+		bbs_list_json(n, kind);
+	}
+
+	$(function(){
+		fnGoPage(1);
+		$(".tab_menu > li").on("click", function(e){
+			e.preventDefault();
+			var index = $(this).index();
+			$(".tab_menu > li").removeClass("on")
+			$(this).addClass("on");
+			fnGoPage(1);
+		});
+	});
+</script>

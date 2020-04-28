@@ -1,0 +1,44 @@
+@charset "euc-kr";
+@import url(https://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+
+html, body { margin:0; padding:0; width:100%; height:auto; font-family:"³ª´®°íµñ", NanumGothic, "µ¸¿ò", Dotum, Arial, verdana; font-size:12px; line-height:140%; color: #333;}
+
+
+html {
+overflow-y:scroll; overflow-x:hidden;
+
+}
+
+
+td, th, table, body, textarea, select, input, dt, dd {
+	font-size: 12px; 
+	font-family:"³ª´®°íµñ", NanumGothic;
+}
+
+
+input,textarea {color:#777; border:1px solid #ccc; background:#fbfafa; color:#000;}
+
+a:link		{color: #333; text-decoration: none;}
+a:visited	{color: #333; text-decoration: none;}
+a:active	{color: #777; text-decoration: none;}
+a:hover		{color: #448ccb; text-decoration:none;}
+
+ul,ol,li	{list-style:none outside;}
+table		{border-collapse:collapse;}
+body,div,dl,dt,dd,ul,li,h1,h2,h3,h4,h5,h6,form,fieldset,p,blockquote,em,p {margin:0;padding:0;}
+fieldset	{border:0 none;}
+img, fieldset {border:0 none;}
+
+
+
+:focus { -moz-outline-style: none; } /* for Firefox */ 
+
+a {a:expression(this.hideFocus=true);} /* for IE */ 
+
+h1, h2, h3, h4, h5 ,h6 {display:block;}
+h1, h2, h3, h4, h5 ,h6 {line-height: 120%;}
+
+img {border:0;}
+
+
+	

@@ -1,0 +1,378 @@
+<%@ CodePage="65001" Language="vbscript"%>
+<!-- #include virtual = "/myoffice/common/common.inc" -->
+<!-- #include virtual = "/myoffice/inc/head.html" -->
+
+<!-- #include virtual = "/myoffice/inc/header.html" -->
+
+<!-- #include virtual = "/myoffice/inc/nav.html" -->
+<%
+Call Check_Login("/myoffice/")
+
+sql =		"select  a.userid, a.username, a.reg_date, a.user_kind,											"
+sql = sql & "        a.e_mail, a.login_id, a.country, a.center_cd, a.center_name,							"
+sql = sql & "        a.parents_id, a.parents_name, p.login_id as parents_login,								"
+sql = sql & "        a.recomm_id, a.recomm_name, r.login_id as recomm_login,								"
+sql = sql & "        a.rank_name, a.max_rank_date,															"
+sql = sql & "        b.country_name, b.flag_img,															"
+sql = sql & "        decode (a.mobile, null, null, encryption_aes.dec_aes (a.mobile)) as mobile, 			"
+sql = sql & "        decode (a.birthday, null, null, encryption_aes.dec_aes (a.birthday)) as birthday		"
+sql = sql & "  from  dist a, country b, dist p, dist r														"
+sql = sql & " where  a.country = b.country(+)																"
+sql = sql & "   and  a.parents_id = p.userid																"
+sql = sql & "   and  a.recomm_id = r.userid																	"
+sql = sql & "	and  a.userid = '" & Session("userid") & "'													"
+
+Set rs = DBConn.Execute(sql)
+
+userid			= rs("userid")
+username		= rs("username")
+reg_date		= rs("reg_date")
+e_mail			= rs("e_mail")
+parents_id		= rs("parents_id")
+parents_name	= rs("parents_name")
+parents_login	= rs("parents_login")
+recomm_id		= rs("recomm_id")
+recomm_name		= rs("recomm_name")
+recomm_login	= rs("recomm_login")
+country_name	= rs("country_name")
+center_name		= rs("center_name")
+login_id		= rs("login_id")
+mobile			= rs("mobile")
+birthday		= rs("birthday")
+flag_img		= rs("flag_img")
+rank_name		= rs("rank_name")
+max_rank_date	= rs("max_rank_date")
+user_kind		= rs("user_kind")
+
+If (max_rank_date = "" Or IsNull(max_rank_date) = true) And user_kind = "2101" Then
+	max_rank_date = reg_date
+End If
+
+If flag_img <> "" and Not IsNull(flag_img) Then
+	country_name = country_name & " " & "<img src=""/myoffice/downline/bizmap/img/flag/" & flag_img & """ style=""width:25px; margin-right:2px; vertical-align:middle;"">"
+End If
+%>
+<div id="container">
+	<div class="contentHeader">
+		<h3 class="contentTitle"><i class="fa fa-th-large" aria-hidden="true"></i> My Profile</h3>
+	</div>
+	<div class="content">
+	<!------------------  ------------------------------>
+		<div class="main_wrap_box">
+			<ul class="main_dashboard">
+				<!--- NEWS ---->
+				<li class="padd_bo">
+					<section class="dash_box">
+							<h4 class="dash_title">NOTICE & NEWS</h4>
+							<ul class="news_list">
+								<%
+								sql = "select sid, subject, to_char(work_date, 'yyyy-mm-dd') as work_date from web_bbs where bbs_kind = 'NOTICE' and rownum <= 4 order by sid desc"
+								Set rsBbs = DBConn.Execute(sql)
+								If Not rsBbs.EOF Then
+									Do While Not rsBbs.EOF
+										sid = rsBbs("sid")
+										work_date = rsBbs("work_date")
+										subject = rsBbs("subject")
+								%>
+								<li>
+									<span class="date"><%=work_date%></span>
+									<span class="subject"><a href="/board/notice_view.html?sid=<%=sid%>"><%=subject%></a></span>
+								</li>
+								<%
+									rsBbs.MoveNext
+									Loop
+								Else
+								%>
+								<li>
+									<span class="date">&nbsp;</span>
+									<span class="subject"><a href="#">There is no registered contnets.</a></span>
+								</li>
+								<%
+								End If
+								%>
+							</ul>
+							<a href="/board/notice.html" class="news_more">more</a>
+					</section>
+				</li>
+				<!--- MY INFO---->
+				<li class="padd_l">
+					<section class="dash_box">
+						<h4 class="dash_title">MY INFOMATION</h4>
+						<div class="myinfo_box">
+							<dl class="info_list">
+								<dt>Join Date</dt>
+								<dd><%=reg_date%></dd>
+							</dl>
+							<dl class="info_list">
+								<dt>Personal ID </dt>
+								<dd><%=recomm_id%></dd>
+							</dl>
+							<dl class="info_list">
+								<dt>Affiliation Center</dt>
+								<dd><%=center_name%></dd>
+							</dl>
+						</div>
+					</section>
+				</li>
+				<!--- PACK PURCHASE STATUS---->
+				<%
+				sql = 		"select c.product_name, a.order_date, 			"
+				sql = sql & "		c.cate_cd1,								"
+				sql = sql & "		decode(c.cate_cd1, '0004', 40, 			"
+				sql = sql & "						   '0005', 60, 			"
+				sql = sql & "						   '0') as dis_rate 	"
+				sql = sql & "  from	order_head a, order_detail b, 			"
+				sql = sql & "		product c 								"
+				sql = sql & " where a.order_no = b.order_no 				"
+				sql = sql & "	and b.product_cd = c.product_cd 			"
+				sql = sql & "	and a.order_kind = '4103' 					"
+				sql = sql & "   and  a.ischeck = '1'						"
+				sql = sql & "   and  a.order_type <> '4'					"
+				sql = sql & "   and  a.bank_date is not null				"
+				sql = sql & "	and a.userid = '" & Session("userid") & "' 	"
+				sql = sql & " order by a.order_no desc						"
+				Set rs_pack = DBConn.Execute(sql)
+				If Not rs_pack.EOF Then
+					pack_name = rs_pack("product_name")
+					pack_date = rs_pack("order_date")
+					pack_cate = rs_pack("cate_cd1")
+					pack_rate = rs_pack("dis_rate") & "%"
+				Else
+					pack_name = "-"
+					pack_date = "-"
+					pack_cate = "-"
+					pack_rate = "-"
+				End If
+				rs_pack.Close : Set rs_pack = Nothing
+				%>
+				<li class="padd_l">
+					<section class="dash_box">
+						<h4 class="dash_title">PACK PURCHASE STATUS</h4>
+						<div class="purchase_status_box">
+							<table class="status_tb">
+								<tr>
+									<th>Purchase Pack</th>
+									<td>
+										<%=pack_name%>
+										<a href="/myoffice/order/package.html" class="btn_upgrade">Upgrade</a>
+									</td>
+								</tr>
+								<tr>
+									<th>Purchase Date</th>
+									<td><%=pack_date%></td>
+								</tr>
+								<tr>
+									<th>Discount Rate</th>
+									<td><%=pack_rate%></td>
+								</tr>
+							</table>
+						</div>
+					</section>
+				</li>
+			</ul>
+			<ul class="main_dashboard_bot">
+				<!--- Total Sales ---->
+				<%
+				sql = 		"select sum(tot_amt) as totalOrder	 			"
+				sql = sql & "  from order_head a 							"
+				sql = sql & " where userid = '" & Session("userid") & "' 	"
+				sql = sql & "	and a.order_kind <> '4101' 					"
+				sql = sql & "   and a.ischeck = '1'							"
+				sql = sql & "   and a.bank_date is not null					"
+				Response.Write sql
+				Set rs_ms = DBConn.Execute(sql)
+				If IsNull(rs_ms("totalOrder")) = False Then
+					myTotalOrder = rs_ms("totalOrder")
+				Else
+					myTotalOrder = 0
+				End If
+				rs_ms.Close : Set rs_ms = Nothing
+
+				sql = 		"select sum(tot_amt) as totalOrder 							"
+				sql = sql & "  from order_head a 										"
+				sql = sql & " where userid <> '" & Session("userid") & "' 				"
+				sql = sql & "	and a.order_kind <> '4101' 								"
+				sql = sql & "   and a.ischeck = '1'										"
+				sql = sql & "   and a.bank_date is not null								"
+				sql = sql & "   and a.userid in (										"
+				sql = sql & "		  select  userid					 				"
+				sql = sql & "		    from  dist										"
+				sql = sql & "		   start with userid = '" & Session("userid") & "'	"
+				sql = sql & "		 connect by prior userid = recomm_id 				"
+				sql = sql & "		)													"
+				Set rs_ps = DBConn.Execute(sql)
+				If IsNull(rs_ps("totalOrder")) = False Then
+					rcTotalOrder = rs_ps("totalOrder")
+				Else
+					rcTotalOrder = 0
+				End If
+				rs_ps.Close : Set rs_ps = Nothing
+				sumTotal = CCur(myTotalOrder) + CCur(rcTotalOrder)
+				%>
+				<li>
+					<section class="status_box">
+						<h4 class="status_title">TOTAL SALES</h4>
+						<div class="st_inner_box">
+							<div class="total_sale_amount"><span class="amount_big_t">$<%=FormatNumber(sumTotal, 2)%></span></div>
+							<div class="total_sale_my">
+								<ul class="total_sale_list">
+									<li>
+										<p class="circle_t  line_v1">MY</p>
+										<p class="my_sum">$<%=FormatNumber(myTotalOrder, 2)%></p>
+									</li>
+									<li>
+										<p class="circle_t line_v2">DOWN<br>LINE</p>
+										<p class="my_sum">$<%=FormatNumber(rcTotalOrder, 2)%></p>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</section>
+				</li>
+				<!--- Position Status ---->
+				<li class="padd_l">
+					<section class="status_box">
+						<h4 class="status_title">POSITION STATUS</h4>
+						<div class="st_inner_box padd_w">
+							<ul class="position_list">
+								<li>
+									<span class="icon_po"><img src="/myoffice/img/main/icon_level.png"></span>
+									<span class="position_dt">Your Level</span>
+									<span class="position_dd"><%=rank_name%></span>
+								</li>
+								<li>
+									<span class="icon_po"><img src="/myoffice/img/main/icon_archieved.png"></span>
+									<span class="position_dt">Archieved Date</span>
+									<span class="position_dd"><%=max_rank_date%></span>
+								</li>
+							</ul>
+						</div>
+					</section>
+				</li>
+				<!--- RECOMMENDED MEMBERS ---->
+				<%
+				sql = "select count(0) as cnt from dist where recomm_id = '" & Session("userid") & "' "
+				Set rs_r = DBConn.Execute(sql)
+				recomm_cnt = rs_r("cnt")
+				rs_r.Close : Set rs_r = Nothing
+				%>
+				<li class="padd_l">
+					<section class="status_box">
+						<h4 class="status_title">RECOMMENDED MEMBERS</h4>
+						<div class="st_inner_box padd_w">
+							<div class="member_list">
+									<p class="member_dt"><img src="/myoffice/img/main/icon_member.png"></p>
+									<p class="member_dd">
+										<span class="member_num"><%=FormatNumber(recomm_cnt, 0)%></span>
+										<span class="members">members</span>
+									</p>
+							</div>
+						</div>
+					</section>
+				</li>
+				<!--- GTxp Balance ---->
+				<li class="padd_l">
+					<section class="status_box">
+						<h4 class="status_title">GTXp BALANCE</h4>
+						<div class="st_inner_box padd_w">
+							<div class="balance_list">
+									<p class="balance_dt"><img src="/myoffice/img/main/icon_gtxp.png"></p>
+									<p class="balance_dd">
+										GTXp <label id="myGTXp">00</label>
+									</p>
+							</div>
+						</div>
+					</section>
+				</li>
+			</ul>
+		</div>
+
+	</div>
+</div>
+<script>
+$(document).ready(function() {
+	live_point();
+});
+
+function live_point() { window.ref = window.setInterval(function() { get_amt(); }, 500); }
+
+function get_amt() {
+	clearInterval(window.ref);
+	$.ajax('/myoffice/common/get_money.html',{
+		success:function(data){
+
+			var amt_temp = data.split("|");
+			var tot_GTXp	 = amt_temp[0];
+
+			$("#myGTXp").text(formatComma(tot_GTXp, 0));
+		}
+	});
+
+	live_point();
+}
+$("#btnSend").on("click", function(){
+	var proc_ok = "T";
+
+	var wallet		= "";
+	var wallet_code	= "";
+	var $wallet		= $("#wallet");
+	var $wallet_code= $("#wallet_code");
+
+	if (!$("#reg_frm").validation()){
+		proc_ok = "F";
+		return false;
+	}
+
+	if(validateEmail($("#e_mail").val()) != true){
+		alert("Please check your E-Mail.");
+		$("#e_mail").focus();
+		return false
+	}
+
+	if ($("#LoginPass").val() != $("#LoginPassChk").val()) {
+		alert("Please check your password.");
+		$("#LoginPassChk").focus();
+		proc_ok = "F";
+		return false;
+	}
+
+	if (proc_ok == "T")	{
+		ajaxSendModify();
+	}
+});
+
+function ajaxSendModify(){
+	var url = "/myoffice/common/profile_modify_proc.html";
+	var data = $("#reg_frm").serializeObject();
+
+	$.ajax({
+		url : url,
+		global :false,
+		contentType : "application/x-www-form-urlencoded; charset=euc-kr",
+		type : "POST",
+		data : data,
+		dataType: 'text',
+		crossDomain: true,
+		async:false,
+		success:function(rtnData){
+			var arrItem = rtnData.split("|");
+			var rtnState= arrItem[0];
+			var rtnMsg 	= arrItem[1].replace(/\\n/g, '\n');
+			var	rtnUrl 	= arrItem[2];
+
+			if (rtnState == "SUCCESS") {
+				alert(rtnMsg);
+				location.reload();
+			} else {
+				alert(rtnMsg);
+			}
+		},
+		error:function(reponse,textStatus,errorThrown){
+			alert("Sorry!!! Some errors are occurred.\n\nPlease try again later.\n\nThank you.");
+		},
+		beforeSend:function(){
+		}
+	});
+}
+</script>
+<!-- #include virtual = "/myoffice/inc/footer.html" -->

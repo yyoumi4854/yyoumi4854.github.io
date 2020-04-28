@@ -1,0 +1,64 @@
+@charset "UTF-8";
+
+.join{max-width: 1360px; margin: 186px auto 110px auto; text-align: center;}
+.join .con{margin-bottom: 30px;}
+.join h2{font-weight: 400; font-size: 42px; line-height: 1em; margin-bottom: 70px;}
+
+.join .join_con{text-align: left; background-color: #f9f9f9; border: 1px solid #d7d7d7; padding: 34px 30px;}
+.join .join_con h3{font-weight: 500; font-size: 18px; color: #20409a; margin-bottom: 30px;}
+.join .join_con h3::after{content: ""; display: inline-block; width: 1115px; height: 1px; background-color: #000; margin-left: 15px; vertical-align: middle;}
+.join .join_con table{width: 100%;}
+
+.join .join_con table tr th{font-weight: 400; font-size: 15px;}
+.join .join_con table tr td{padding-bottom: 10px;}
+.join .join_con table tr td input{width: 282px; border: 1px solid #d7d7d7; padding: 8px 15px;}
+.join .join_con table tr td input::placeholder{color: #acacac;}
+.join .join_con table tr td button{width: 75px; height: 30px; background-color: #959595; border: 0; color: #fff; margin-left: 5px;}
+
+.join .join_top h3::after{width: 1115px;}
+.join .join_top table tr th{width: 11%;}
+.join .join_top table tr td{width: 100%;}
+.join .join_top table tr:nth-child(2) th{vertical-align: top;}
+.join .join_top table tr:nth-child(3) td{background-color: #ebebeb; font-weight: 300; font-size: 14px; color: #959595; padding: 10px;}
+
+.join .join_bottom{margin-top: 45px;}
+.join .join_bottom h3::after{width: 1090px;}
+.join .join_bottom table tr th{width: 15%;}
+.join .join_bottom table tr:last-child td{padding-bottom: 0;}
+.join .join_bottom table tr td select{width: 208px; border: 1px solid #d7d7d7; color: #acacac; padding: 8px 15px; appearance: none; -webkit-appearance: none; background: #fff url(../img/member/selsct_arrow.png) no-repeat 95% 50%;}
+.join .join_bottom table tr td select::-ms-expand{display: none;}
+
+.join>button{width: 190px; height: 50px; background-color: #fff; border: 1px solid #000; font-size: 18px;}
+.join>button:first-of-type{background-color: #ed1c24; border: 0; color: #fff; margin-right: 20px;}
+
+@media all and (max-width: 1399px){
+  .join{margin: 186px 3% 110px 3%;}
+  .join .join_con h3::after{display: block; width: 100%; margin-left: 0; margin-top: 2px;}
+  .join .join_con h3{text-align: left;}
+}
+
+@media all and (max-width: 1250px){
+  .join .join_top table tr th{width: 18%;}
+  .join .join_bottom table tr th{width: 23%;}
+}
+
+@media all and (max-width: 767px){
+  .join{margin: 75px 3% 70px 3%; text-align: left}
+  .join h2{font-size: 24px; margin-bottom: 24px;}
+
+  .join .join_con{text-align: left; background-color: #f9f9f9; border: 1px solid #d7d7d7; padding: 5%;}
+  .join .join_con h3{font-size: 15px; margin-bottom: 3%;}
+
+  .join .join_top table tr th{width: 100%;}
+  .join .join_top table tr:nth-child(3) td{font-size: 11px;}
+  .join .join_bottom table tr th{width: 100%;}
+
+  .join .join_con table tr th{font-size: 13px; display: block;}
+  .join .join_con table tr td{display: block; width: 100%;}
+  .join .join_con table tr td input{width: 75%; border: 1px solid #d7d7d7; padding: 8px 15px;}
+  .join .join_con table tr td button{width: 20%; font-size: 11px;}
+
+  .join .join_bottom{margin-top: 20px;}
+  .join>button{width: 45%; height: 40px; font-size: 15px;}
+  .join>button:first-of-type{margin-right: 10px;}
+}

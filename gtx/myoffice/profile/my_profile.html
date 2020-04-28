@@ -1,0 +1,225 @@
+<%@ CodePage="65001" Language="vbscript"%>
+<!-- #include virtual = "/myoffice/common/common.inc" -->
+<!-- #include virtual = "/myoffice/inc/head.html" -->
+
+<!-- #include virtual = "/myoffice/inc/header.html" -->
+
+<!-- #include virtual = "/myoffice/inc/nav.html" -->
+<%
+Call Check_Login(fURL)
+
+sql =		"select  a.userid, a.username,																	"
+sql = sql & "        a.e_mail, a.login_id, a.country, a.center_cd, a.center_name,							"
+sql = sql & "        a.parents_id, a.parents_name, p.login_id as parents_login,								"
+sql = sql & "        a.recomm_id, a.recomm_name, r.login_id as recomm_login,								"
+sql = sql & "        b.country_name, b.flag_img, a.bank_name, a.bank_owner, a.bank_account, 				"
+sql = sql & "        decode (a.mobile, null, null, encryption_aes.dec_aes (a.mobile)) as mobile, 			"
+sql = sql & "        decode (a.birthday, null, null, encryption_aes.dec_aes (a.birthday)) as birthday		"
+sql = sql & "  from  dist a, country b, dist p, dist r														"
+sql = sql & " where  a.country = b.country(+)																"
+sql = sql & "   and  a.parents_id = p.userid																"
+sql = sql & "   and  a.recomm_id = r.userid																	"
+sql = sql & "	and  a.userid = '" & Session("userid") & "'													"
+
+Set rs = DBConn.Execute(sql)
+
+userid			= rs("userid")
+username		= rs("username")
+e_mail			= rs("e_mail")
+parents_id		= rs("parents_id")
+parents_name	= rs("parents_name")
+parents_login	= rs("parents_login")
+recomm_id		= rs("recomm_id")
+recomm_name		= rs("recomm_name")
+recomm_login	= rs("recomm_login")
+country_name	= rs("country_name")
+center_name		= rs("center_name")
+login_id		= rs("login_id")
+mobile			= rs("mobile")
+birthday		= rs("birthday")
+flag_img		= rs("flag_img")
+bank_name		= rs("bank_name")
+bank_owner		= rs("bank_owner")
+bank_account	= rs("bank_account")
+
+If flag_img <> "" and Not IsNull(flag_img) Then
+	country_name = country_name & " " & "<img src=""/myoffice/downline/bizmap/img/flag/" & flag_img & """ style=""width:25px; margin-right:2px; vertical-align:middle;"">"
+End If
+%>
+<div id="container">
+	<div class="contentHeader">
+		<h3 class="contentTitle"><i class="fa fa-th-large" aria-hidden="true"></i> My Profile</h3>
+	</div>
+	<div class="content">
+		<form name="reg_frm" id="reg_frm" method="post">
+			<input type="hidden" name="userid" id="userid" value="<%=session("userid")%>" />
+			<div class="section">
+				<div class="innerBox">
+					<div class="tableBox">
+						<label>Country</label>
+						<p><%=country_name%></p>
+					</div>
+					<div class="tableBox">
+						<label>Center</label>
+						<p><%=center_name%></p>
+					</div>
+					<div class="tableBox">
+						<label>Name</label>
+						<p><%=username%></p>
+					</div>
+					<div class="tableBox">
+						<label>Login ID</label>
+						<p><%=login_id%></p>
+					</div>
+					<div class="tableBox">
+						<label>Sponser</label>
+						<p><%=recomm_login%> [<%=recomm_name%>]</p>
+					</div>
+				</div>
+			</div>
+			<div class="section">
+				<div class="innerBox">
+					<div class="tableBox">
+						<label for="e_mail">Email</label>
+						<input type="text" name="e_mail" id="e_mail" placeholder="Enter E-Mail"
+							   check="T" check_type="length" check_length="0" check_key=""
+							   title="Please fill in the E-Mail field."
+							   maxLength="100" value="<%=e_mail%>">
+						<span class="focus-input100"></span>
+					</div>
+					<div class="tableBox">
+						<label for="mobile">Mobile</label>
+						<input type="text" name="mobile" id="mobile" placeholder="Enter Mobile Phone"
+							   check="T" check_type="length" check_length="0" check_key=""
+							   title="Please fill in the mobile phone field."
+							   maxLength="20" value="<%=mobile%>">
+						<span class="focus-input100"></span>
+					</div>
+				</div>
+			</div>
+			<div class="section">
+				<div class="innerBox">
+					<div class="tableBox">
+						<label for="bank_name">Bank Name</label>
+						<input type="text" name="bank_name" id="bank_name" placeholder="Enter E-Mail"
+							   check="F" check_type="length" check_length="0" check_key=""
+							   title="Please fill in the bank name field."
+							   maxLength="100" value="<%=bank_name%>">
+						<span class="focus-input100"></span>
+					</div>
+					<div class="tableBox">
+						<label for="bank_owner">Account holder name</label>
+						<input type="text" name="bank_owner" id="bank_owner" placeholder="Enter Account holder name"
+							   check="F" check_type="length" check_length="0" check_key=""
+							   title="Please fill in the Account holder name field."
+							   maxLength="20" value="<%=bank_owner%>">
+						<span class="focus-input100"></span>
+					</div>
+					<div class="tableBox">
+						<label for="bank_account">Account number</label>
+						<input type="text" name="bank_account" id="bank_account" placeholder="Enter Account number"
+							   check="F" check_type="length" check_length="0" check_key=""
+							   title="Please fill in the Account number field."
+							   maxLength="50" value="<%=bank_account%>">
+						<span class="focus-input100"></span>
+					</div>
+				</div>
+			</div>
+			<div class="section">
+				<div class="innerBox">
+					<div class="tableBox">
+						<label for="LoginPassCheck">Current Password</label>
+						<input type="password" name="LoginPassCheck" id="LoginPassCheck" placeholder="Enter Password"
+							   check="T" check_type="length" check_length="3" check_key=""
+							   title="Please fill in the password field more than 4 characters."
+							   maxLength="30">
+						<span class="focus-input100"></span>
+					</div>
+					<div class="tableBox">
+						<label for="LoginPass">New Password</label>
+						<input type="password" name="LoginPass" id="LoginPass" placeholder="Enter New Password">
+						<span class="focus-input100"></span>
+					</div>
+					<div class="tableBox">
+						<label for="LoginPassChk">Confirm Password</label>
+						<input type="password" name="LoginPassChk" id="LoginPassChk" placeholder="Enter Confirm Password">
+						<span class="focus-input100"></span>
+					</div>
+				</div>
+			</div>
+			<div class="section">
+				<div class="innerBox btnWrap">
+					<button type="button" class="btnDefault" id="btnSend" style="background:#8666b2;">Modify Profile</button>
+				</div>
+			</div>
+		</form>
+
+	</div>
+</div>
+<script>
+$("#btnSend").on("click", function(){
+	var proc_ok = "T";
+
+	var wallet		= "";
+	var wallet_code	= "";
+	var $wallet		= $("#wallet");
+	var $wallet_code= $("#wallet_code");
+
+	if (!$("#reg_frm").validation()){
+		proc_ok = "F";
+		return false;
+	}
+
+	if(validateEmail($("#e_mail").val()) != true){
+		alert("Please check your E-Mail.");
+		$("#e_mail").focus();
+		return false
+	}
+
+	if ($("#LoginPass").val() != $("#LoginPassChk").val()) {
+		alert("Please check your password.");
+		$("#LoginPassChk").focus();
+		proc_ok = "F";
+		return false;
+	}
+
+	if (proc_ok == "T")	{
+		ajaxSendModify();
+	}
+});
+
+function ajaxSendModify(){
+	var url = "/myoffice/common/profile_modify_proc.html";
+	var data = $("#reg_frm").serializeObject();
+
+	$.ajax({
+		url : url,
+		global :false,
+		contentType : "application/x-www-form-urlencoded; charset=utf-8",
+		type : "POST",
+		data : data,
+		dataType: 'text',
+		crossDomain: true,
+		async:false,
+		success:function(rtnData){
+			var arrItem = rtnData.split("|");
+			var rtnState= arrItem[0];
+			var rtnMsg 	= arrItem[1].replace(/\\n/g, '\n');
+			var	rtnUrl 	= arrItem[2];
+
+			if (rtnState == "SUCCESS") {
+				alert(rtnMsg);
+				location.reload();
+			} else {
+				alert(rtnMsg);
+			}
+		},
+		error:function(reponse,textStatus,errorThrown){
+			alert("Sorry!!! Some errors are occurred.\n\nPlease try again later.\n\nThank you.");
+		},
+		beforeSend:function(){
+		}
+	});
+}
+</script>
+<!-- #include virtual = "/myoffice/inc/footer.html" -->
