@@ -1,0 +1,253 @@
+@charset "UTF-8";
+
+/* 폰트 */
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap');
+body{font-family: 'Noto Sans KR', sans-serif; color: #333; font-size: 18px; letter-spacing: -0.12px;}
+body{font-family: 'Noto Sans KR', sans-serif; color: #333; font-size: 18px; letter-spacing: -0.12px;}
+/* 리셋 */
+*{margin: 0; padding: 0; box-sizing: border-box;}
+html,body{width: 100%; height: 100%;}
+li{list-style: none;}
+a{text-decoration:none; color: #333;}
+img{vertical-align: top;}
+/* //리셋 */
+
+/* 공용 */
+section{position: relative; z-index: -2;}
+.clear_fix::after{content: ''; display: block; clear: both; }
+
+/* header */
+header{position: fixed; top: 0; width: 100%;}
+header::before{content: ''; position: fixed; top: 0; width: 100%; background: rgba(255, 255, 255, 0.7);  opacity: 0; transition: all .3s;}
+header.on::before{opacity: 1;}
+/* //header */
+
+/* main */
+.main{width: 100%; height: 100%; background: #F7F0EA; padding: 0;}
+.main .inner{height: 100%;}
+.main .title h2::after,section h3.title::after{content: ''; position: absolute; left: 0; bottom: 0; background: #FFDF00; z-index: -1;}
+
+.main .title .typing_con .typing_txt{display: none;}
+.main .title .typing_con .typing_txt ul{list-style:none;}
+.main .title .typing_con .typing ul li{display:block;}
+.main .title .typing_con .typing ul li.on{display: inline-block;}
+.main .content{position: absolute; right: 0; bottom: 80px; text-align: right;}
+.main .sd_ani{position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);}
+.main .sd_ani p{position: relative; padding-bottom: 30px;}
+.main .sd_ani p::after{content: ''; width: 1px; height: 20px; background: #333; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);}
+/* //main */
+
+/* about */
+#about .bottom_con .con_itm h4{font-weight: 500; padding-bottom: 10px; margin-bottom: 10px;}
+#about .bottom_con .con_itm>ul>li+li{margin-top: 20px;}
+#about .bottom_con .con_itm>ul>li span:first-child{font-weight: 500;}
+#about .bottom_con .con_itm>ul>li span+span{font-weight: 300;}
+
+#about .bottom_con .profile{background: #FFED6D;}
+#about .bottom_con .profile h4{border-bottom: 3px solid #FFDF00;}
+#about .bottom_con .profile li span{display: inline-block;}
+
+#about .bottom_con .history{background: #F7F0EA;}
+#about .bottom_con .history h4{border-bottom: 3px solid #F4E5C4;}
+#about .bottom_con .history li span{display: block;}
+#about .bottom_con .history li span.click{cursor: pointer;}
+#about .bottom_con .history li span i{margin-left: 10px; transition: all .3s;}
+#about .bottom_con .history li span.on i{transform: rotate(180deg);}
+#about .bottom_con .history li dl{margin-top: 10px;}
+#about .bottom_con .history li dt{font-weight: 500; font-size: 16px; padding-bottom: 10px;}
+#about .bottom_con .history li dd ul{display: flex;}
+#about .bottom_con .history li dd ul li{font-weight: 300; width: 68px; text-align: center;}
+#about .bottom_con .history li dd ul li+li{margin-left: 8px;}
+#about .bottom_con .history li dd ul li img{width: 44px;}
+/* // about */
+
+/* skill */
+#skill{position: relative;}
+#skill::before{content: ''; width: 100%; height: 100%; position: absolute; left: 0; top: 0; background: url(./images/skill_bg.jpg) no-repeat center fixed; background-size: cover; opacity: .5; z-index: -2;}
+#skill .skill_con li img{height: 80px;}
+#skill .skill_con li span{display: block; font-weight: 500; padding-top: 10px;}
+/* //skill */
+
+/* portfolio */
+#portfolio{background: #F7F7F7; position: relative;}
+#portfolio .portfolio_con{max-width: 720px; margin: 0 auto;}
+#portfolio .portfolio_con li{width: 320px; float: left;}
+#portfolio .portfolio_con li:nth-child(2n){float: right;}
+#portfolio .portfolio_con li>span{display: block; font-size: 16px; margin-bottom: 10px;}
+#portfolio .portfolio_con li .itme_con{border-radius: 10px; box-shadow: 0 5px 10px #ccc; overflow: hidden;}
+#portfolio .portfolio_con li img{width: 320px;}
+#portfolio .portfolio_con li .txt_box{background: #fff; padding: 20px;}
+#portfolio .portfolio_con li .txt_box .title{display: block; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px; position: relative;}
+#portfolio .portfolio_con li .txt_box .title p{font-weight: 700;}
+#portfolio .portfolio_con li .txt_box .title i{position: absolute; right: 0; top: 6px;}
+#portfolio .portfolio_con li .txt_box .title:hover i{animation-name: allowMove; animation-duration: .7s; animation-iteration-count: infinite;}
+@keyframes allowMove{
+    0%{right: 5px;}
+    50%{right: 0;}
+    100%{right: 5px;}
+}
+#portfolio .portfolio_con li .txt_box span{display: block; font-size: 14px;}
+#portfolio .portfolio_con li .txt_box .prev_site{margin-top: 10px;}
+#portfolio .portfolio_con li .txt_box .prev_site a{display: inline-block; border: 1px solid #333; padding: 4px 10px; transition: all .3s;}
+#portfolio .portfolio_con li .txt_box .prev_site a:hover{background: #333; color: #fff;}
+/* //portfolio */
+
+/* contanct */
+#contanct{background: #24232D;}
+#contanct .txt_box p{font-weight: 300; color: #fff;}
+#contanct .txt_box p span{font-weight: 500;}
+#contanct .contanct_con dl{display: flex; border-bottom: 2px solid #3C3A49; padding: 10px 0;}
+#contanct .contanct_con dl dt{color: #474650;}
+#contanct .contanct_con dl dd{font-weight: 300; color: #fff; margin-left: auto;}
+#contanct .contanct_con p{margin-top: 20px;}
+#contanct .contanct_con p button{cursor: pointer; color: #fff; background: #24232D; border: 1px solid #3C3A49; padding: 8px 10px;}
+/* //contanct */
+
+/* footer */
+footer{background: #070709; text-align: center; padding: 10px 0;}
+/* //footer */
+
+/* top button */
+.btn_top{background-color: #F7F0EA; border: 0; outline: 0; border-radius: 50%; position: fixed; right: 20px; bottom: 40px; display: none; cursor: pointer; overflow: hidden;}
+.btn_top::after{content: "";  display: block; width: 0; height: 0; border-radius: 50%; background-color: #FFDF00; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); transition: 0.3s;}
+.btn_top p{position: relative; z-index: 20;}
+.btn_top:hover{color: #fff;}
+.btn_top:hover::after{width: 70px; height: 70px;}
+/* //top button */
+
+
+/* pc */
+@media only screen and (min-width: 1281px){
+    /* 공용 */
+    .pc_none{display: none !important;}
+    .inner{width: 1200px; margin: 0 auto; position: relative;}
+    section{padding: 120px 0;}
+    section h3.title{display: inline-block; font-size: 40px; position: relative;}
+    .main .title h2::after, section h3.title::after{width: calc(100% + 40px); height: 24px;}
+    /* //공용 */
+
+    /* header */
+    header{padding: 12px 0;}
+    header.on::before{height: 72px;}
+    header h1.logo{height: 48px;}
+    header h1.logo img{width: 48px;}
+    header .main_menu{position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);}
+    header .main_menu ul{display: flex;}
+    header .main_menu li+li{padding-left: 20px;}
+    header .main_menu li a{position: relative;}
+    header .main_menu li a::after{content: ''; width: 0; height: 12px; background: #FFDF00; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); z-index: -1; transition: all .3s;}
+    header .main_menu li a.on::after{content: ''; width: calc(100% + 20px);}
+    /* //header */
+
+    /* main */
+    .main .title{position: absolute; left: 0; top: 36%;}
+    .main .title h2{font-weight: 700; font-size: 40px; position: relative;}
+    .main .title .typing_con{font-weight: 300; font-size: 20px; margin-top: 20px;}
+    /* //main */
+
+    /* about */
+    section h3.title::after{top: 36px;}
+    #about .top_con{display: flex; border-bottom: 1px solid #E3E3E3; padding-bottom: 120px;}
+    #about .top_con p{margin-left: auto;}
+
+    #about .bottom_con{padding-top: 120px;}
+    #about .bottom_con .con_itm{width: 48%; border-radius: 10px; padding: 32px;}
+    #about .bottom_con .con_itm h4{font-size: 24px;}
+    #about .bottom_con .profile{float: left;}
+    #about .bottom_con .profile li span:first-child{width: 80px;}
+
+    #about .bottom_con .history{float: right; margin-top: 120px;}
+    #about .bottom_con .history li dd ul li{font-size: 14px;}
+    /* //about */
+
+    /* skill */
+    #skill .skill_con{display: flex; margin-top: 60px;}
+    #skill .skill_con li{width: 100%; text-align: center;}
+    /* //skill */
+
+    /* portfolio */
+    #portfolio .portfolio_con{margin: 60px auto 0 auto;}
+    #portfolio .portfolio_con li+li{margin-top: 200px;}
+    /* //portfolio */
+
+    /* contanct */
+    #contanct .inner{display: flex;}
+    #contanct .contanct_con{width: 48%; margin-left: auto;}
+    #contanct .txt_box p+p{margin-top: 60px;}
+    #contanct .contanct_con p{text-align: right;}
+    #contanct .contanct_con p button{font-size: 16px;}
+    /* //contanct */
+
+    /* footer */
+    footer p{font-size: 14px; color: #504F58;}
+    /* //footer */
+
+    /* top button */
+    .btn_top{width: 60px; height: 60px; display: none;}
+    /* //top button */
+
+}
+
+/* mobile */
+@media only screen and (max-width:1280px){
+    body{font-size: 1.6rem; letter-spacing: -0.12px;}
+    /* 공용 */
+    html{height:100%;font-size:62.5%;}
+    .m_none{display: none !important;}
+    .inner{margin: 0 2rem; position: relative; height: 100%;}
+    section{padding: 60px 0;}
+    section h3.title{display: inline-block; font-size: 2.4rem; position: relative;}
+    .main .title h2::after, section h3.title::after{width: calc(100% + 2rem); height: 1.6rem;}
+    /* //공용 */
+
+    /* header */
+    header{padding: 2rem 0;}
+    header h1.logo{height: 3.6rem;}
+    header h1.logo img{width: 3.6rem;}
+    /* //header */
+
+    /* main */
+    .main .title{position: absolute; left: 0; top: 24%;}
+    .main .title h2{font-weight: 700; font-size: 2.4rem; position: relative;}
+    .main .title .typing_con{font-weight: 300; margin-top: 1.2rem;}
+    /* //main */
+
+    /* about */
+    #about .top_con{border-bottom: 1px solid #E3E3E3; padding-bottom: 6rem;}
+    #about .top_con p{margin-top: 2rem;}
+    #about .bottom_con{padding-top: 6rem;}
+    #about .bottom_con .con_itm{border-radius: 1rem; padding: 2rem;}
+    #about .bottom_con .con_itm h4{font-size: 1.8rem;}
+    #about .bottom_con .con_itm li{font-size: 1.4rem;}
+    #about .bottom_con .profile li span:first-child{width: 5.6rem;}
+    #about .bottom_con .history{margin-top: 2rem;}
+    #about .bottom_con .history li dd ul li{font-size: 1.2rem;}
+    /* //about */
+
+    /* skill */
+    #skill::before{background-position: left top;}
+    #skill .skill_con{margin-top: 2rem;}
+    #skill .skill_con li{float: left; width: 50%; text-align: center;}
+    #skill .skill_con li:nth-child(n+3){margin-top: 2rem;}
+    /* //skill */
+
+    /* portfolio */
+    #portfolio .portfolio_con{margin-top: 2rem;}
+    #portfolio .portfolio_con li+li{margin-top: 12rem;}
+    /* //portfolio */
+
+    /* contanct */
+    #contanct .txt_box p+p{margin-top: 2rem;}
+    #contanct .contanct_con{margin-top: 6rem;}
+    #contanct .contanct_con p{text-align: center;}
+    /* //contanct */
+
+    /* footer */
+    footer p{font-size: 12px; color: #504F58;}
+    /* //footer */
+
+    /* top button */
+    .btn_top{width: 48px; height: 48px;}
+    .btn_top p{font-size: 12px;}
+    /* //top button */
+}
