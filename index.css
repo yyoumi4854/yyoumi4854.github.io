@@ -100,7 +100,7 @@ header.on::before{opacity: 1;}
 #contanct .contanct_con dl dt{color: #474650;}
 #contanct .contanct_con dl dd{font-weight: 300; color: #fff; margin-left: auto;}
 #contanct .contanct_con p{margin-top: 20px;}
-#contanct .contanct_con p button{cursor: pointer; color: #fff; background: #24232D; border: 1px solid #3C3A49; padding: 8px 10px;}
+#contanct .contanct_con p a{color: #fff; background: #24232D; border: 1px solid #3C3A49; padding: 8px 10px;}
 /* //contanct */
 
 /* footer */
